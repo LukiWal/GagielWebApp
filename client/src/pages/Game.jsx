@@ -1,51 +1,48 @@
 import React from 'react';
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
+import { useParams } from "react-router-dom";
+import { generateId } from '../helper/helperFunctions';
 
 const socket = io.connect("http://localhost:8800");
 
 
-function makeid(length) {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    return result;
-}
+
 
 
 const Game = () => {
 
-    const [room, setRoom] = useState("");
+    const [roomId, setRoomId] = useState("");
+    const [sessionId, setSessionId] = useState("");
+
+    let params = useParams();
 
     const joinRoom = () => {
-        if (room !== "") {
-            const sessionId = localStorage.getItem('sessionId');
-            socket.emit("join_room", room);
+        if (roomId !== "") {
+            socket.emit("join_room", { roomId: roomId, sessionId: sessionId });
         }
     };
 
     useEffect(() => {
-            if(localStorage.getItem('sessionId') === null){
-                const id = makeid(10);
-                localStorage.setItem('sessionId', JSON.stringify(id));
-            }   
+        if(localStorage.getItem('sessionId') === null){
+            const newId = generateId(10, true);
+            setSessionId(newId);
+            localStorage.setItem('sessionId', JSON.stringify(newId));
+        } else{
+            const id = localStorage.getItem('sessionId');
+            setSessionId(id);
+        }      
     }, []);
 
-    
-    
-    
+  
     
     return <div>
-                <h1>Game</h1>
+                <h1>Game {sessionId}</h1>
+                <h2>{params.roomId}</h2>
                 <input
                 placeholder="Room Number..."
                 onChange={(event) => {
-                setRoom(event.target.value);
+                setRoomId(event.target.value);
                 }}
                 />
                 <button onClick={joinRoom}> Join Room</button>
