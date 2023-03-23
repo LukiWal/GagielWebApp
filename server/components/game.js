@@ -1,20 +1,29 @@
 const db = require('../mySqlConnection');
+const createDeckOfCards = require('../helper/helperFunctions')
 
 class Game{
     constructor(){
         this.id = null;
         this.gameId = null;
+        this.maxPlayers = 3;
+        this.deckOfCards = [];
         this.player1 = null;
         this.player2 = null;
         this.player3 = null;
         this.player4 = null;
-        this.maxPlayers = 3;
+        this.player1Cards = [];
+        this.player2Cards = [];
+        this.player3Cards = [];
+        this.player4Cards = [];
     }
 
     createGame(data){
-        
         this.gameId = data.newGameId
         this.player1 = data.sessionId
+    }
+
+    startGame(){
+        this.deckOfCards = createDeckOfCards();
     }
 
     joinGame(data){

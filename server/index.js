@@ -41,7 +41,7 @@ function createGame(data){
 
 
     newGame.createGame(data);
-   
+
     newGame.saveGame();
 }
 
@@ -63,6 +63,10 @@ async function joinGame(data, socket){
     }else{
         socket.emit("error_popup", "GAME FULL ERORR!!!");
         return;
+    }
+
+    if(newGame.maxPlayersReached()){
+        newGame.startGame();
     }
 
     newGame.updateGame(); 

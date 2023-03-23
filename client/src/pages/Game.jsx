@@ -1,10 +1,10 @@
 import React from 'react';
 import { useEffect, useState } from "react";
-import io from "socket.io-client";
+import { socket } from '../helper/socket';
 import { useParams } from "react-router-dom";
 import { generateId } from '../helper/helperFunctions';
 
-const socket = io.connect("http://localhost:8800");
+
 
 
 const Game = ({sessionId}) => {
@@ -26,7 +26,7 @@ const Game = ({sessionId}) => {
             socket.emit("join_room", { gameId: params.roomId, sessionId: sessionId});
         }
         
-    },[{sessionId}] );
+    },[] );
     
     useEffect(() => {
         socket.on("receive", (data) => {

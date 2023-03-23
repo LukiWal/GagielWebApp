@@ -1,10 +1,11 @@
 import React from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import io from "socket.io-client";
 import { generateId } from '../helper/helperFunctions';
 
-const socket = io.connect("http://localhost:8800");
+import { socket } from '../helper/socket';
+
+
 
 const CreateGame = ({sessionId}) => {
 
