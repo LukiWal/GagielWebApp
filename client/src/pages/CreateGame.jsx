@@ -6,19 +6,23 @@ import { generateId } from '../helper/helperFunctions';
 
 const socket = io.connect("http://localhost:8800");
 
-const CreateGame = () => {
+const CreateGame = ({sessionId}) => {
 
     const [newGameId, setNewGameId] = useState(generateId(6, false));
-
+    const [gameCreated, setGameCreated] = useState(false); 
 
     let navigate = useNavigate(); 
  
     const createGame = () => {
  
-        socket.emit("create_game", { newGameId: newGameId });
-
-        let path = `/game/`+newGameId; 
-        navigate(path);
+        if(!gameCreated){
+            socket.emit("create_game", { newGameId: newGameId, sessionId: sessionId });
+            
+            setGameCreated(true)
+            let path = `/game/`+newGameId; 
+            navigate(path);
+        }
+        
     };
 
     return <div>
@@ -27,13 +31,7 @@ const CreateGame = () => {
               
                 <button onClick={createGame}> Join Room</button>
 
-                <Link
-                    style={{ display: "block", margin: "1rem 0" }}
-                    to={`/game/123456`}
-                >
-                    Create Game
-                </Link>
-        </div>;
+            </div>
   };
   
   export default CreateGame;

@@ -26,8 +26,23 @@ db.promise = (sql) => {
 };
 
 db.promiseInsert = (sql, values) => {
+
     return new Promise((resolve, reject) => {
         db.query(sql, [values], (err, result) => {
+            if(err){
+                reject(new Error());
+            }
+            else{
+                resolve(result);
+            }
+        });
+    });
+};
+
+db.promiseUpdate = (sql, values) => {
+
+    return new Promise((resolve, reject) => {
+        db.query(sql, values, (err, result) => {
             if(err){
                 reject(new Error());
             }
