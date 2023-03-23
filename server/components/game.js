@@ -52,13 +52,14 @@ class Game{
 
         let data = await db.promise(sql);
 
-        //Check if game was found
-            //else error
+        
 
         this.id = data[0].id;
         this.gameId = data[0].gameId;
         this.player1 = data[0].player1;
         this.player2 = data[0].player2;
+        this.player3 = data[0].player3;
+        this.player4 = data[0].player4;
 
         if(this.id != null){
             return("done");
@@ -69,11 +70,13 @@ class Game{
     }
 
     saveGame(){
-        const sql = "INSERT INTO games (`gameId`,`player1`,`player2`) VALUES (?)"
+        const sql = "INSERT INTO games (`gameId`,`player1`,`player2`,`player3`,`player4`) VALUES (?)"
         const values = [
             this.gameId,
             this.player1,
             this.player2,
+            this.player3,
+            this.player4
         ]
 
         db.promiseInsert(sql, values);
@@ -84,6 +87,8 @@ class Game{
         const values = {
             player1 : this.player1,
             player2 : this.player2,
+            player3 : this.player3,
+            player4 : this.player4,
         }
            
         db.promiseUpdate(sql, [values, this.gameId]);

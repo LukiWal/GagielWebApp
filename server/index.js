@@ -20,8 +20,15 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
   
+    socket.on("send_all", (data) => {
+        console.log(data.gameId)
+        socket.to(data.gameId).emit("recieve", "Hallo");
+    });
+
     socket.on("join_room", (data) => {
         joinGame(data)
+        console.log(data.sessionId +" joinded room: " +data.gameId)
+        socket.join(data.gameId);
     });
 
     socket.on("create_game", (data) => {
