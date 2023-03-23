@@ -10,6 +10,9 @@ const socket = io.connect("http://localhost:8800");
 const Game = ({sessionId}) => {
     
     let params = useParams();
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
     const [messageReceived, setMessageReceived] = useState("");
 
     const sendToAll = () => {
@@ -26,9 +29,14 @@ const Game = ({sessionId}) => {
     },[{sessionId}] );
     
     useEffect(() => {
-        socket.on("recieve", (data) => {
-            console.log(data)
+        socket.on("receive", (data) => {
             setMessageReceived(data);
+        });
+
+        socket.on("error_popup", (data) => {
+            console.log("error popup")
+            setShowErrorPopup(true);
+            setErrorMessage(data);
         });
     }, [socket]);
 
@@ -39,6 +47,8 @@ const Game = ({sessionId}) => {
                 <h2>{params.roomId}</h2>
                 <h3>Message: {messageReceived}</h3>
                 
+
+                { showErrorPopup && (<div> ERORR: {errorMessage}</div>)}
                 <button onClick={sendToAll}> Send to all</button>
             </div>;
 };

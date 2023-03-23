@@ -22,13 +22,12 @@ io.on("connection", (socket) => {
   
     socket.on("send_all", (data) => {
         console.log(data.gameId)
-        socket.to(data.gameId).emit("recieve", "Hallo");
+        socket.to(data.gameId).emit("receive", "Hallo");
     });
 
     socket.on("join_room", (data) => {
-        joinGame(data)
-        console.log(data.sessionId +" joinded room: " +data.gameId)
-        socket.join(data.gameId);
+        joinGame(data, socket)
+       
     });
 
     socket.on("create_game", (data) => {
@@ -46,16 +45,27 @@ function createGame(data){
     newGame.saveGame();
 }
 
-async function joinGame(data){
+async function joinGame(data, socket){
     let newGame = new Game();
 
+    try{
+        await newGame.fetchGame(data.gameId);
+    }catch(e){
+        socket.emit("error_popup", "WRONG CODE ERORR!!!");
+        return;
+    }
     
-    await newGame.fetchGame(data.gameId);
-   
     newGame.joinGame(data);
 
+    if(newGame.hasPlayer(data.sessionId)){
+        console.log(data.sessionId +" joinded room: " +data.gameId);
+        socket.join(data.gameId);        
+    }else{
+        socket.emit("error_popup", "GAME FULL ERORR!!!");
+        return;
+    }
 
-    newGame.updateGame()
+    newGame.updateGame(); 
 }
 
 async function test(){
