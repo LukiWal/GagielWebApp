@@ -55,3 +55,5 @@ db.promiseUpdate = (sql, values) => {
 
 
 module.exports = db
+
+// sessionId gameId socketId

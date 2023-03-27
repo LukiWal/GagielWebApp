@@ -9,17 +9,14 @@ import { useEffect, useState } from "react";
 import JoinGame from './pages/JoinGame';
 
 function App() {
-  const [sessionId, setSessionId] = useState("");
+  const [sessionId, setSessionId] = useState(JSON.parse(localStorage.getItem('sessionId')));
     
   useEffect(() => {
       if(localStorage.getItem('sessionId') === null){
           const newId = generateId(10, true);
           setSessionId(newId);
           localStorage.setItem('sessionId', JSON.stringify(newId));
-      } else{
-          const id = localStorage.getItem('sessionId');
-          setSessionId(JSON.parse(id));
-      }      
+      }  
   }, []);
 
   return (

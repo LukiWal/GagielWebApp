@@ -4,6 +4,7 @@ const cors = require("cors");
 const {Server} = require('socket.io');
 
 const Game = require('./components/game')
+const Player = require('./components/player')
 
 const app = express();
 app.use(cors);
@@ -19,11 +20,17 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
+    console.log(io.engine.clientsCount)
   
-    socket.on("send_all", (data) => {
-        console.log(data.gameId)
-        socket.to(data.gameId).emit("receive", "Hallo");
+    socket.on("disconnect", () => {
+        console.log(`User disconnected: ${socket.id}`);
+        console.log(io.engine.clientsCount)
     });
+
+    socket.on("session_id", (data) => {
+        console.log(" belongs to " +data)
+    });
+
 
     socket.on("join_room", (data) => {
         joinGame(data, socket)
@@ -55,9 +62,12 @@ async function joinGame(data, socket){
         return;
     }
     
-    newGame.joinGame(data);
+    await newGame.joinGame(data, socket.id);
 
-    if(newGame.hasPlayer(data.sessionId)){
+    let newPlayer = new Player(data.sessionId, data.gameId, null);
+    let playerId = await newPlayer.doesPlayerExist();    
+
+    if(newGame.hasPlayer(playerId)){
         console.log(data.sessionId +" joinded room: " +data.gameId);
         socket.join(data.gameId);        
     }else{
@@ -74,13 +84,16 @@ async function joinGame(data, socket){
 
 async function test(){
     
-    var firstGame = new Game()
-    await firstGame.fetchGame(1)
+    var firstPlayer = new Player();
+    
+    firstPlayer.sessionId = "NCMOUx38OJ"
+    firstPlayer.gameId = "O7XPX6"
+    firstPlayer.socketId = "O7XPX6"
 
-    firstGame.player1 = "Doch nicht Luki"
-    firstGame.saveGame()
+    let id = await firstPlayer.doesPlayerExist()
+    
+    console.log("Exists? " +id)
 }
-
 
 
 
