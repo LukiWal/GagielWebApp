@@ -12,18 +12,34 @@ class Game{
         this.player2 = null;
         this.player3 = null;
         this.player4 = null;
-        this.player1Cards = [];
-        this.player2Cards = [];
-        this.player3Cards = [];
-        this.player4Cards = [];
     }
 
     createGame(data){
         this.gameId = data.newGameId;
     }
+    
+    getCards(numberOfCards){
+        const cardArray = this.deckOfCards.slice(0, numberOfCards);
+        this.deckOfCards = this.deckOfCards.slice(numberOfCards);
+        return cardArray;
+    }
 
-    startGame(){
+    async startGame(){
         this.deckOfCards = createDeckOfCards();
+    
+        const playerArray = this.getPlayerArray();
+        let playerObjectArray = [];
+
+        for(let i = 0; i < playerArray.length; i++){
+            let player = new Player()
+            await player.fetchPlayerById(playerArray[i])
+
+            player.cards = this.getCards(5);
+            playerObjectArray.push(player);
+            player.updatePlayer();
+        }
+
+        return playerObjectArray;
     }
 
     hasPlayer(playerId){
@@ -45,10 +61,10 @@ class Game{
 
     async joinGame(data, socketId){
         let newPlayer = new Player(data.sessionId, data.gameId, socketId);
-
+        
         if(!this.maxPlayersReached()){
             try{
-
+               
                 const newId = await newPlayer.savePlayerAndGetId();
                
                 if(!this.player1){
@@ -61,17 +77,40 @@ class Game{
                     this.player4 = newId;
                 }
 
+                
+
                 this.updateGame();
             }catch(e){
+             
+               
+              
                 newPlayer.playerId = await newPlayer.doesPlayerExist();
 
-                if(newPlayer.playerId){
-                    await newPlayer.updatePlayer();
-                }
+                
+
+                newPlayer.updatePlayer();
+                
                
                 return;
             }
+        } else{
+            newPlayer.playerId = await newPlayer.doesPlayerExist();
+
+            newPlayer.updatePlayer();
         }
+    }
+
+    getPlayerArray(){
+        const allPlayerArray = [this.player1, this.player2, this.player3, this.player4];
+        const playerArray = [];
+
+        allPlayerArray.forEach(function (player){
+            if(player != null){
+                playerArray.push(player);
+            }
+        });
+
+        return playerArray;
     }
 
     maxPlayersReached(){
@@ -95,7 +134,7 @@ class Game{
     async fetchGame(gameId){
         
         const sql = "SELECT * FROM `games` WHERE `gameId`='" +gameId +"'"
-        
+    
         let data = await db.promise(sql);
 
 
@@ -134,6 +173,7 @@ class Game{
             player2 : this.player2,
             player3 : this.player3,
             player4 : this.player4,
+            deckOfCards : JSON.stringify(this.deckOfCards)
         }
            
         db.promiseUpdate(sql, [values, this.gameId]);

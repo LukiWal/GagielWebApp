@@ -12,19 +12,27 @@ const Game = ({sessionId}) => {
     let params = useParams();
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [joinedGame, setJoinedGame] = useState(false); 
+ 
+
+    const startGame = () => {
+ 
+        
+        socket.emit("start_game", { gameId: params.roomId});
+            
+           
+        
+    };
+
 
     useEffect(() => {
         console.log("JOIN ROOM")
   
-        if(sessionId && !joinedGame){
+        if(sessionId){
             console.log("SessionId: " +sessionId)
             
-            socket.emit("join_room", { gameId: params.roomId, sessionId: sessionId});
-            setJoinedGame(true)
-            socket.emit('seesion_id', { gameId: params.roomId, sessionId: sessionId}); 
+            socket.emit("join_room", { gameId: params.roomId, sessionId: sessionId}); 
         } 
-    },[socket] );
+    },[] );
     
     useEffect(() => {
 
@@ -47,7 +55,8 @@ const Game = ({sessionId}) => {
                 <h1>Game {sessionId}</h1>
                 <h2>{params.roomId}</h2>
           
-                
+                <button onClick={startGame}> Start Game</button>
+
 
                 { showErrorPopup && (<div> ERORR: {errorMessage}</div>)}
                 

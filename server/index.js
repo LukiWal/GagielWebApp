@@ -33,14 +33,19 @@ io.on("connection", (socket) => {
 
 
     socket.on("join_room", async (data) => {
-        await joinGame(data, socket)
-       
+        await joinGame(data, socket) 
+    });
+
+    socket.on("start_game", (data) => {
+        startGame(data, socket) 
     });
 
     socket.on("create_game", (data) => {
         
         createGame(data);
     });
+
+
 });
 
 function createGame(data){
@@ -50,6 +55,23 @@ function createGame(data){
     newGame.createGame(data);
 
     newGame.saveGame();
+}
+
+async function startGame(data, socket){
+    console.log("GAME STARTED")
+    let newGame = new Game()
+    await newGame.fetchGame(data.gameId)
+ 
+    let playerObejctArray = await newGame.startGame();
+
+    console.log(playerObejctArray)
+    for(let i = 0; i < playerObejctArray.length; i++){
+        const player = playerObejctArray[i]
+      
+        io.to(player.socketId).emit("error_popup", player.cards)
+    }
+
+    newGame.updateGame();
 }
 
 async function joinGame(data, socket){
@@ -63,18 +85,14 @@ async function joinGame(data, socket){
     }
 
     if(newGame.maxPlayersReached()){
-        socket.emit("error_popup", "GAME FULL ERORR!!!");
-        return;
+        //socket.emit("error_popup", "GAME FULL ERORR!!!");
+       // return;
     } 
 
     await newGame.joinGame(data, socket.id);
     
     let newPlayer = new Player(data.sessionId, data.gameId, null);
     let playerId = await newPlayer.doesPlayerExist();    
-
-    if(newGame.maxPlayersReached()){
-        newGame.startGame();
-    }
     
     if(newGame.hasPlayer(playerId)){
         socket.join(data.gameId);
@@ -82,22 +100,33 @@ async function joinGame(data, socket){
     } 
 }
 
-async function test(){
-    
-    var firstPlayer = new Player();
-    
-    firstPlayer.sessionId = "NCMOUx38OJ"
-    firstPlayer.gameId = "O7XPX6"
-    firstPlayer.socketId = "O7XPX6"
 
-    let id = await firstPlayer.doesPlayerExist()
+
+/* async function test(){
     
-    console.log("Exists? " +id)
+    let newGame = new Game();
+
+
+    await newGame.fetchGame("2PGU04");
+
+
+
+    let playerObejctArray = await newGame.startGame();
+    console.log("Test")
+
+    for(let i = 0; i < playerObejctArray.length; i++){
+        const player = playerObejctArray[i]
+        console.log(player.socketId, player.cards)
+        io.on("connection", (socket) => {
+            socket.to(player.socketId).emit("error_popup", JSON.stringify(player.cards))
+        });
+    }
+
+    newGame.updateGame();
+
 }
 
-
-
-
+test() */
 
 server.listen(8800, () =>{
     console.log("SERVER IS RUNNING...")

@@ -6,11 +6,7 @@ class Player{
         this.sessionId = sessionId
         this.gameId = gameId
         this.socketId = socketId
-    }
-
-
-    async hasPlayer(sessionId){
-        
+        this.cards = null
     }
 
     async doesPlayerExist(){
@@ -31,6 +27,7 @@ class Player{
         
         let data = await db.promise(sql);
 
+        console.log(sql)
 
         this.playerId = data[0].playerId;
         this.sessionId = data[0].sessionId
@@ -47,12 +44,14 @@ class Player{
 
     async savePlayerAndGetId(){
         const sql = "INSERT INTO players (`sessionId`,`gameId`,`socketId`) VALUES (?);"
+        
         const values = [
             this.sessionId,
             this.gameId,
             this.socketId
         ]
 
+        console.log(values)
         const result = await db.promiseInsert(sql, values);
         return result.insertId;
     }
@@ -62,8 +61,12 @@ class Player{
         const values = {
             sessionId : this.sessionId,
             gameId : this.gameId,
-            socketId: this.socketId
+            socketId: this.socketId,
+            cards: JSON.stringify(this.cards)
         }
+
+  
+
            
         await db.promiseUpdate(sql, [values, this.playerId]);
     }
