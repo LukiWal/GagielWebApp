@@ -55,13 +55,17 @@ function createGame(data){
 async function joinGame(data, socket){
     let newGame = new Game();
 
-
     try{
         await newGame.fetchGame(data.gameId);
     }catch(e){
         socket.emit("error_popup", "WRONG CODE ERORR!!!");
         return;
     }
+
+    if(newGame.maxPlayersReached()){
+        socket.emit("error_popup", "GAME FULL ERORR!!!");
+        return;
+    } 
 
     await newGame.joinGame(data, socket.id);
     
@@ -72,16 +76,10 @@ async function joinGame(data, socket){
         newGame.startGame();
     }
     
-   
     if(newGame.hasPlayer(playerId)){
-    
         socket.join(data.gameId);
         return; 
-    }else{
-  
-        socket.emit("error_popup", "GAME FULL ERORR!!!");
-        return;
-    }  
+    } 
 }
 
 async function test(){

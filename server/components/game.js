@@ -45,42 +45,32 @@ class Game{
 
     async joinGame(data, socketId){
         let newPlayer = new Player(data.sessionId, data.gameId, socketId);
-       
-        newPlayer.playerId = await newPlayer.doesPlayerExist();
 
-        console.log("Does Player exists: " +newPlayer.playerId)
-        if(!newPlayer.playerId){
-            if(!this.maxPlayersReached()){
-                
-                //create new player
+        if(!this.maxPlayersReached()){
+            try{
 
-                
-                //save player
-                try{
-
-                    const newId = await newPlayer.savePlayerAndGetId();
-                    console.log("This is the new player id: " +newId)
-                    //fetch player for id 
-                    if(!this.player1){
-                        this.player1 = newId;
-                    }else if(!this.player2){
-                        this.player2 = newId;
-                    } else if(!this.player3){
-                        this.player3 = newId;
-                    } else if(!this.player4){
-                        this.player4 = newId;
-                    }
-
-                    this.updateGame();
-                }catch(e){
-                    
-                    await newPlayer.updatePlayer();
-                    return;
+                const newId = await newPlayer.savePlayerAndGetId();
+               
+                if(!this.player1){
+                    this.player1 = newId;
+                }else if(!this.player2){
+                    this.player2 = newId;
+                } else if(!this.player3){
+                    this.player3 = newId;
+                } else if(!this.player4){
+                    this.player4 = newId;
                 }
+
+                this.updateGame();
+            }catch(e){
+                newPlayer.playerId = await newPlayer.doesPlayerExist();
+
+                if(newPlayer.playerId){
+                    await newPlayer.updatePlayer();
+                }
+               
+                return;
             }
-            
-        } else {
-            newPlayer.updatePlayer();
         }
     }
 
