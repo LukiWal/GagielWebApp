@@ -32,8 +32,8 @@ io.on("connection", (socket) => {
     });
 
 
-    socket.on("join_room", (data) => {
-        joinGame(data, socket)
+    socket.on("join_room", async (data) => {
+        await joinGame(data, socket)
        
     });
 
@@ -55,31 +55,33 @@ function createGame(data){
 async function joinGame(data, socket){
     let newGame = new Game();
 
+
     try{
         await newGame.fetchGame(data.gameId);
     }catch(e){
         socket.emit("error_popup", "WRONG CODE ERORR!!!");
         return;
     }
-    
-    await newGame.joinGame(data, socket.id);
 
+    await newGame.joinGame(data, socket.id);
+    
     let newPlayer = new Player(data.sessionId, data.gameId, null);
     let playerId = await newPlayer.doesPlayerExist();    
-
-    if(newGame.hasPlayer(playerId)){
-        console.log(data.sessionId +" joinded room: " +data.gameId);
-        socket.join(data.gameId);        
-    }else{
-        socket.emit("error_popup", "GAME FULL ERORR!!!");
-        return;
-    }
 
     if(newGame.maxPlayersReached()){
         newGame.startGame();
     }
-
-    newGame.updateGame(); 
+    
+   
+    if(newGame.hasPlayer(playerId)){
+    
+        socket.join(data.gameId);
+        return; 
+    }else{
+  
+        socket.emit("error_popup", "GAME FULL ERORR!!!");
+        return;
+    }  
 }
 
 async function test(){

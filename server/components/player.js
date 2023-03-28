@@ -18,10 +18,9 @@ class Player{
        
         try{
             const id = await db.promise(sql);
-            console.log("pöayer : "+id[0].playerId)
+       
             return id[0].playerId;
         }catch(e){
-            console.log(e)
             return false;
         }
     }
@@ -58,7 +57,7 @@ class Player{
         return result.insertId;
     }
 
-    updatePlayer(){
+    async updatePlayer(){
         const sql = "UPDATE players SET ? WHERE playerId = ?"
         const values = {
             sessionId : this.sessionId,
@@ -66,7 +65,7 @@ class Player{
             socketId: this.socketId
         }
            
-        db.promiseUpdate(sql, [values, this.playerId]);
+        await db.promiseUpdate(sql, [values, this.playerId]);
     }
 }
 

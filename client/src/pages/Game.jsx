@@ -24,7 +24,7 @@ const Game = ({sessionId}) => {
             setJoinedGame(true)
             socket.emit('seesion_id', { gameId: params.roomId, sessionId: sessionId}); 
         } 
-    },[] );
+    },[socket] );
     
     useEffect(() => {
 

@@ -19,14 +19,19 @@ class Game{
     }
 
     createGame(data){
-        this.gameId = data.newGameId 
+        this.gameId = data.newGameId;
     }
 
     startGame(){
         this.deckOfCards = createDeckOfCards();
     }
 
-    async hasPlayer(playerId){
+    hasPlayer(playerId){
+        if(playerId == null || playerId == false){
+
+            return false;
+        }
+
         if( this.player1 == playerId ||
             this.player2 == playerId ||
             this.player3 == playerId ||
@@ -39,35 +44,38 @@ class Game{
     }
 
     async joinGame(data, socketId){
-        
-
-        //data.sessionId data.gameID socketId
-
-        //Check if sessionId and data.gameId already exists in players table
-
         let newPlayer = new Player(data.sessionId, data.gameId, socketId);
        
         newPlayer.playerId = await newPlayer.doesPlayerExist();
-        //If not create new player
-        console.log("Player Id " +newPlayer.playerId)
+
+        console.log("Does Player exists: " +newPlayer.playerId)
         if(!newPlayer.playerId){
             if(!this.maxPlayersReached()){
-
+                
                 //create new player
 
                 
                 //save player
-                const newId = await newPlayer.savePlayerAndGetId();
-                console.log(newId)
-                //fetch player for id 
-                if(!this.player1){
-                    this.player1 = newId;
-                }else if(!this.player2){
-                    this.player2 = newId;
-                } else if(!this.player3){
-                    this.player3 = newId;
-                } else if(!this.player4){
-                    this.player4 = newId;
+                try{
+
+                    const newId = await newPlayer.savePlayerAndGetId();
+                    console.log("This is the new player id: " +newId)
+                    //fetch player for id 
+                    if(!this.player1){
+                        this.player1 = newId;
+                    }else if(!this.player2){
+                        this.player2 = newId;
+                    } else if(!this.player3){
+                        this.player3 = newId;
+                    } else if(!this.player4){
+                        this.player4 = newId;
+                    }
+
+                    this.updateGame();
+                }catch(e){
+                    
+                    await newPlayer.updatePlayer();
+                    return;
                 }
             }
             
@@ -75,8 +83,6 @@ class Game{
             newPlayer.updatePlayer();
         }
     }
-
-   
 
     maxPlayersReached(){
         const playerArray = [this.player1, this.player2, this.player3, this.player4];
