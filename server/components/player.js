@@ -27,7 +27,6 @@ class Player{
         
         let data = await db.promise(sql);
 
-        console.log(sql)
 
         this.playerId = data[0].playerId;
         this.sessionId = data[0].sessionId
@@ -51,7 +50,6 @@ class Player{
             this.socketId
         ]
 
-        console.log(values)
         const result = await db.promiseInsert(sql, values);
         return result.insertId;
     }

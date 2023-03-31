@@ -24,6 +24,18 @@ class Game{
         return cardArray;
     }
 
+    addPlayerId(playerId){
+        if(!this.player1){
+            this.player1 = playerId;
+        }else if(!this.player2){
+            this.player2 = playerId;
+        } else if(!this.player3){
+            this.player3 = playerId;
+        } else if(!this.player4){
+            this.player4 = playerId;
+        }
+    }
+
     async startGame(){
         this.deckOfCards = createDeckOfCards();
     
@@ -62,35 +74,17 @@ class Game{
     async joinGame(data, socketId){
         let newPlayer = new Player(data.sessionId, data.gameId, socketId);
         
-        
-        try{
-            
+        try{ //Check that game isnt full 
             const newId = await newPlayer.savePlayerAndGetId();
             
-            if(!this.player1){
-                this.player1 = newId;
-            }else if(!this.player2){
-                this.player2 = newId;
-            } else if(!this.player3){
-                this.player3 = newId;
-            } else if(!this.player4){
-                this.player4 = newId;
-            }
-
-            
+            this.addPlayerId(newId);
 
             this.updateGame();
-        }catch(e){
-            
-            
-            
+        }catch(e){ //Check that player is in game
             newPlayer.playerId = await newPlayer.doesPlayerExist();
 
-            
-
             newPlayer.updatePlayer();
-            
-            
+             
             return;
         } 
     }
@@ -119,7 +113,6 @@ class Game{
         });
 
         if(this.maxPlayers <= playerCount){
-            console.log("Max players reached")
             return true;
         } else{
             return false;

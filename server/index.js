@@ -59,18 +59,22 @@ function createGame(data){
 }
 
 async function startGame(data, socket){
-    console.log("GAME STARTED")
+
     let newGame = new Game()
     await newGame.fetchGame(data.gameId)
  
     let playerObejctArray = await newGame.startGame();
 
-    console.log(playerObejctArray)
     for(let i = 0; i < playerObejctArray.length; i++){
         const player = playerObejctArray[i]
       
-        io.to(player.socketId).emit("error_popup", player.cards)
+        io.to(player.socketId).emit("error_popup", {
+            playerCards : player.cards, 
+            playerPoints : 20,
+            trumpCard: "H_A"
+        })
     }
+
 
     newGame.updateGame();
 }
@@ -85,20 +89,23 @@ async function joinGame(data, socket){
         return;
     }
 
-    if(newGame.maxPlayersReached()){
-        //socket.emit("error_popup", "GAME FULL ERORR!!!");
-       // return;
-    } 
+    if(!newGame.maxPlayersReached()){
+        await newGame.joinGame(data, socket.id);
 
-    await newGame.joinGame(data, socket.id);
-    
-    let newPlayer = new Player(data.sessionId, data.gameId, null);
-    let playerId = await newPlayer.doesPlayerExist();    
-    
-    if(newGame.hasPlayer(playerId)){
-        socket.join(data.gameId);
-        return; 
-    } 
+    }else{
+        let newPlayer = new Player(data.sessionId, data.gameId, socket.id);
+
+        newPlayer.playerId = await newPlayer.doesPlayerExist(); 
+
+        if(newPlayer.playerId){
+            newPlayer.updatePlayer(); 
+        }else{
+            socket.emit("error_popup", "GAME FULL ERROR");
+            return;  
+        } 
+    }
+
+    socket.join(data.gameId);
 }
 
 
