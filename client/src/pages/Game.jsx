@@ -15,12 +15,7 @@ const Game = ({sessionId}) => {
  
 
     const startGame = () => {
- 
-        
         socket.emit("start_game", { gameId: params.roomId});
-            
-           
-        
     };
 
 
@@ -30,7 +25,9 @@ const Game = ({sessionId}) => {
         if(sessionId){
             console.log("SessionId: " +sessionId)
             
-            socket.emit("join_room", { gameId: params.roomId, sessionId: sessionId}); 
+            socket.emit("join_room", { gameId: params.roomId, sessionId: sessionId}, function(){
+                console.log("JOINED THE ROOM")
+            }); 
         } 
     },[] );
     

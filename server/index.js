@@ -32,8 +32,9 @@ io.on("connection", (socket) => {
     });
 
 
-    socket.on("join_room", async (data) => {
+    socket.on("join_room", async (data, callback) => {
         await joinGame(data, socket) 
+        callback()
     });
 
     socket.on("start_game", (data) => {

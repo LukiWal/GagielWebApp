@@ -62,42 +62,37 @@ class Game{
     async joinGame(data, socketId){
         let newPlayer = new Player(data.sessionId, data.gameId, socketId);
         
-        if(!this.maxPlayersReached()){
-            try{
-               
-                const newId = await newPlayer.savePlayerAndGetId();
-               
-                if(!this.player1){
-                    this.player1 = newId;
-                }else if(!this.player2){
-                    this.player2 = newId;
-                } else if(!this.player3){
-                    this.player3 = newId;
-                } else if(!this.player4){
-                    this.player4 = newId;
-                }
-
-                
-
-                this.updateGame();
-            }catch(e){
-             
-               
-              
-                newPlayer.playerId = await newPlayer.doesPlayerExist();
-
-                
-
-                newPlayer.updatePlayer();
-                
-               
-                return;
+        
+        try{
+            
+            const newId = await newPlayer.savePlayerAndGetId();
+            
+            if(!this.player1){
+                this.player1 = newId;
+            }else if(!this.player2){
+                this.player2 = newId;
+            } else if(!this.player3){
+                this.player3 = newId;
+            } else if(!this.player4){
+                this.player4 = newId;
             }
-        } else{
+
+            
+
+            this.updateGame();
+        }catch(e){
+            
+            
+            
             newPlayer.playerId = await newPlayer.doesPlayerExist();
 
+            
+
             newPlayer.updatePlayer();
-        }
+            
+            
+            return;
+        } 
     }
 
     getPlayerArray(){
