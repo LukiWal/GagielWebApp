@@ -12,6 +12,8 @@ class Game{
         this.player2 = null;
         this.player3 = null;
         this.player4 = null;
+        this.trumpCard = null;
+        this.hasStarted = true;
     }
 
     createGame(data){
@@ -22,6 +24,10 @@ class Game{
         const cardArray = this.deckOfCards.slice(0, numberOfCards);
         this.deckOfCards = this.deckOfCards.slice(numberOfCards);
         return cardArray;
+    }
+
+    setTrumpCard(){
+        this.trumpCard = this.deckOfCards[this.deckOfCards.length - 1]
     }
 
     addPlayerId(playerId){
@@ -38,7 +44,8 @@ class Game{
 
     async startGame(){
         this.deckOfCards = createDeckOfCards();
-    
+        this.setTrumpCard()
+
         const playerArray = this.getPlayerArray();
         let playerObjectArray = [];
 
@@ -75,6 +82,7 @@ class Game{
         let newPlayer = new Player(data.sessionId, data.gameId, socketId);
         
         try{ //Check that game isnt full 
+            
             const newId = await newPlayer.savePlayerAndGetId();
             
             this.addPlayerId(newId);
@@ -82,7 +90,7 @@ class Game{
             this.updateGame();
         }catch(e){ //Check that player is in game
             newPlayer.playerId = await newPlayer.doesPlayerExist();
-
+          
             newPlayer.updatePlayer();
              
             return;

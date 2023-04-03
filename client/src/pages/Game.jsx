@@ -24,12 +24,12 @@ const Game = ({sessionId}) => {
 
     useEffect(() => {
         console.log("JOIN ROOM")
-  
+    
         if(sessionId){
             console.log("SessionId: " +sessionId)
             
             socket.emit("join_room", { gameId: params.roomId, sessionId: sessionId}, function(){
-                console.log("JOINED THE ROOM")
+                /* socket.emit("load_game", { gameId: params.roomId }) */
             }); 
         } 
     },[] );
@@ -40,18 +40,18 @@ const Game = ({sessionId}) => {
             setErrorMessage(data);
         }
 
-        function startGame(data){
-            setPlayerCards(data[0].playerCards);
-            setPlayerPoints(data[0].playerPoints);
-            setTrumpCard(data[0].trumpCard);
+        function startGameData(data){
+            setPlayerCards(data.playerCards);
+            setPlayerPoints(data.playerPoints);
+            setTrumpCard(data.trumpCard);
         }
     
         socket.on("error_popup", errorPopuop);
-        socket.on("start_game", startGame);
+        socket.on("load_start_game", startGameData);
 
         return () => {
             socket.off('error_popup', errorPopuop);
-            socket.off("start_game", startGame);
+            socket.off("load_start_game", startGameData);
         }
     }, []);
 

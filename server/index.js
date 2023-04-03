@@ -34,12 +34,15 @@ io.on("connection", (socket) => {
 
     socket.on("join_room", async (data, callback) => {
         await joinGame(data, socket) 
-        callback()
     });
 
     socket.on("start_game", (data) => {
         startGame(data, socket) 
     });
+
+    /* socket.on("load_game", (data) => {
+        loadGame(data, socket);
+    }); */
 
     socket.on("create_game", (data) => {
         
@@ -48,6 +51,17 @@ io.on("connection", (socket) => {
 
 
 });
+
+async function loadGame(game, player, socket){
+    await player.fetchPlayerById(player.playerId)
+
+    io.to(player.socketId).emit("load_start_game", {
+        playerCards : player.cards, 
+        playerPoints : 20,
+        trumpCard: game.trumpCard
+    })
+
+}
 
 function createGame(data){
     let newGame = new Game();
@@ -68,10 +82,10 @@ async function startGame(data, socket){
     for(let i = 0; i < playerObejctArray.length; i++){
         const player = playerObejctArray[i]
       
-        io.to(player.socketId).emit("error_popup", {
+        io.to(player.socketId).emit("load_start_game", {
             playerCards : player.cards, 
             playerPoints : 20,
-            trumpCard: "H_A"
+            trumpCard: newGame.trumpCard
         })
     }
 
@@ -89,20 +103,25 @@ async function joinGame(data, socket){
         return;
     }
 
-    if(!newGame.maxPlayersReached()){
-        await newGame.joinGame(data, socket.id);
+    let newPlayer = new Player(data.sessionId, data.gameId, socket.id);
 
+    if(!newGame.maxPlayersReached() && !newGame.hasStarted){
+        await newGame.joinGame(data, socket.id);
     }else{
-        let newPlayer = new Player(data.sessionId, data.gameId, socket.id);
+        
 
         newPlayer.playerId = await newPlayer.doesPlayerExist(); 
-
+        
         if(newPlayer.playerId){
             newPlayer.updatePlayer(); 
         }else{
             socket.emit("error_popup", "GAME FULL ERROR");
             return;  
         } 
+    }
+
+    if(newGame.hasStarted && newPlayer){
+        await loadGame(newGame, newPlayer, socket);
     }
 
     socket.join(data.gameId);

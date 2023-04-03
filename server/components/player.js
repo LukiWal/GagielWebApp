@@ -27,16 +27,17 @@ class Player{
         
         let data = await db.promise(sql);
 
-
+        console.log(data)
         this.playerId = data[0].playerId;
         this.sessionId = data[0].sessionId
         this.gameId = data[0].gameId
         this.socketId = data[0].socketId
+        this.cards = data[0].cards
 
         if(this.playerId != null){
             return("done");
         } else{
-            throw Error('Nope. Try again.');
+            throw Error('Nope. Try again.'); 
         }
         
     }
@@ -56,15 +57,15 @@ class Player{
 
     async updatePlayer(){
         const sql = "UPDATE players SET ? WHERE playerId = ?"
-        const values = {
+        let values = {
             sessionId : this.sessionId,
             gameId : this.gameId,
-            socketId: this.socketId,
-            cards: JSON.stringify(this.cards)
+            socketId: this.socketId
         }
 
-  
-
+        if(this.cards){
+            values.cards = JSON.stringify(this.cards) 
+        }
            
         await db.promiseUpdate(sql, [values, this.playerId]);
     }
