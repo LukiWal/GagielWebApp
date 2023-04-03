@@ -16,6 +16,8 @@ const Game = ({sessionId}) => {
     const [playerCards, setPlayerCards] = useState("");
     const [playerPoints, setPlayerPoints] = useState("");
     const [trumpCard, setTrumpCard] = useState("");
+    const [playersTurn, setPlayersTurn] = useState(false);
+    
 
     const startGame = () => {
         socket.emit("start_game", { gameId: params.roomId});
@@ -41,9 +43,11 @@ const Game = ({sessionId}) => {
         }
 
         function startGameData(data){
+            console.log(data)
             setPlayerCards(data.playerCards);
             setPlayerPoints(data.playerPoints);
             setTrumpCard(data.trumpCard);
+            setPlayersTurn(data.playersTurn)
         }
     
         socket.on("error_popup", errorPopuop);
@@ -65,6 +69,7 @@ const Game = ({sessionId}) => {
                 { showErrorPopup && (<div> ERORR: {errorMessage}</div>)}
 
                 <h2>Game State:</h2>
+                <h3>Spieler an der Reihe: { playersTurn && ( "YES")}</h3>
                 <h3>Spieler Karten: {playerCards}</h3>
                 <h3>Spieler Punkte: {playerPoints}</h3>
                 <h3>Trumpf Karte: {trumpCard}</h3>

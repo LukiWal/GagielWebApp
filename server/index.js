@@ -5,6 +5,7 @@ const {Server} = require('socket.io');
 
 const Game = require('./components/game')
 const Player = require('./components/player')
+const Round = require('./components/round')
 
 const app = express();
 app.use(cors);
@@ -76,17 +77,34 @@ async function startGame(data, socket){
 
     let newGame = new Game()
     await newGame.fetchGame(data.gameId)
- 
+
+    let firstRound = new Round(data.gameId)
+
+    let playerArray = newGame.getPlayerArray();
+    firstRound.selectStartingPlayer(playerArray);
+
+    firstRound.saveRound()
+    
     let playerObejctArray = await newGame.startGame();
 
     for(let i = 0; i < playerObejctArray.length; i++){
         const player = playerObejctArray[i]
-      
-        io.to(player.socketId).emit("load_start_game", {
+        console.log(player)
+
+        gameData = {
             playerCards : player.cards, 
             playerPoints : 20,
             trumpCard: newGame.trumpCard
-        })
+        }
+
+        console.log("PlayerId: " +player.playerId +" PlayerToBeginn: " +firstRound.playerToBeginn)
+        if(player.playerId == firstRound.playerToBeginn){
+            gameData.playersTurn = true
+        } else {
+            gameData.playersTurn = false
+        }
+
+        io.to(player.socketId).emit("load_start_game", gameData)
     }
 
 
@@ -105,7 +123,8 @@ async function joinGame(data, socket){
 
     let newPlayer = new Player(data.sessionId, data.gameId, socket.id);
 
-    if(!newGame.maxPlayersReached() && !newGame.hasStarted){
+    if(!newGame.maxPlayersReached()){
+        console.log("new player joinded")
         await newGame.joinGame(data, socket.id);
     }else{
         
@@ -130,30 +149,17 @@ async function joinGame(data, socket){
 
 
 /* async function test(){
+    let newRound = new Round()
+    newRound.gameId = "AAAAAA"
+    newRound.playeToBeginn = 9
+
+    newRound.saveRound() 
     
-    let newGame = new Game();
-
-
-    await newGame.fetchGame("2PGU04");
-
-
-
-    let playerObejctArray = await newGame.startGame();
-    console.log("Test")
-
-    for(let i = 0; i < playerObejctArray.length; i++){
-        const player = playerObejctArray[i]
-        console.log(player.socketId, player.cards)
-        io.on("connection", (socket) => {
-            socket.to(player.socketId).emit("error_popup", JSON.stringify(player.cards))
-        });
-    }
-
-    newGame.updateGame();
-
+    await newRound.fetchCurrentRoundByGameId("AAAAAA");
+    console.log(newRound)
 }
 
-test() */
+test()  */
 
 server.listen(8800, () =>{
     console.log("SERVER IS RUNNING...")

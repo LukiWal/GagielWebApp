@@ -6,7 +6,7 @@ class Game{
     constructor(){
         this.id = null;
         this.gameId = null;
-        this.maxPlayers = 3;
+        this.maxPlayers = 2;
         this.deckOfCards = [];
         this.player1 = null;
         this.player2 = null;

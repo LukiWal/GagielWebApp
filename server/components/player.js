@@ -27,7 +27,7 @@ class Player{
         
         let data = await db.promise(sql);
 
-        console.log(data)
+        
         this.playerId = data[0].playerId;
         this.sessionId = data[0].sessionId
         this.gameId = data[0].gameId
