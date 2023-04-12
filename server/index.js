@@ -41,6 +41,12 @@ io.on("connection", (socket) => {
         startGame(data, socket) 
     });
 
+    socket.on("play_card", (data, callback) => {
+        console.log(data.sessionId +" played: " +data.card)
+        playCard(data)
+        callback()
+    });
+
     /* socket.on("load_game", (data) => {
         loadGame(data, socket);
     }); */
@@ -52,6 +58,80 @@ io.on("connection", (socket) => {
 
 
 });
+
+async function playCard(data){
+    let currentRound = new Round()
+    await currentRound.fetchCurrentRoundByGameId(data.gameId);
+
+    let game = new Game();
+    await game.fetchGame(data.gameId)
+
+    let player = new Player(data.sessionId, data.gameId);
+    let playerId = await player.doesPlayerExist();
+    await player.fetchPlayerById(playerId);
+
+    let playerArray = game.getPlayerArray();
+    
+    if(currentRound.checkIfItsPlayersTurn(playerArray, playerId)){
+        currentRound.playCard(data.card);
+        player.removeCard(data.card);
+       /*  const newCard = game.getCards(1);
+        player.drawCard(newCard); */
+
+        let nextPlayerId = currentRound.getNextPlayerId(playerArray);
+        let nextPlayer = new Player();
+        await nextPlayer.fetchPlayerById(playerId);
+
+        
+
+        io.to(nextPlayer.socketId).emit("load_start_game", {
+            playersTurn : true
+        })
+
+        if(currentRound.allCardsPlayed(playerArray)){
+            //Evaluate round 
+            //check if sb won 
+            
+
+            //else draw cards for every player and send it to them 
+            
+
+            let newRound = new Round(data.gameId, nextPlayerId);
+            newRound.saveRound();
+        }
+    }
+    
+
+    //All players turn false exept
+    io.to(player.socketId).emit("load_start_game", {
+        playerCards : player.cards
+    })
+
+
+
+    
+    //Check if players turn
+
+    
+
+
+
+    //Check if players turn
+        //check if player has card
+            //play card
+            //if all cards played:
+                //evaluate round
+                //check if a player has won
+
+                //else: 
+                    //create new round with new player to beginn with
+                    
+
+
+    currentRound.updateRound();
+    game.updateGame();
+    player.updatePlayer();
+}
 
 async function loadGame(game, player, socket){
     await player.fetchPlayerById(player.playerId)
@@ -75,6 +155,7 @@ function createGame(data){
 
 async function startGame(data, socket){
 
+    //CHECK IF GAME FULL ELSE RETURN ERROR
     let newGame = new Game()
     await newGame.fetchGame(data.gameId)
 
@@ -89,7 +170,7 @@ async function startGame(data, socket){
 
     for(let i = 0; i < playerObejctArray.length; i++){
         const player = playerObejctArray[i]
-        console.log(player)
+        //console.log(typeof(player.cards))
 
         gameData = {
             playerCards : player.cards, 
@@ -97,7 +178,7 @@ async function startGame(data, socket){
             trumpCard: newGame.trumpCard
         }
 
-        console.log("PlayerId: " +player.playerId +" PlayerToBeginn: " +firstRound.playerToBeginn)
+        //console.log("PlayerId: " +player.playerId +" PlayerToBeginn: " +firstRound.playerToBeginn)
         if(player.playerId == firstRound.playerToBeginn){
             gameData.playersTurn = true
         } else {
@@ -106,7 +187,6 @@ async function startGame(data, socket){
 
         io.to(player.socketId).emit("load_start_game", gameData)
     }
-
 
     newGame.updateGame();
 }
@@ -123,7 +203,7 @@ async function joinGame(data, socket){
 
     let newPlayer = new Player(data.sessionId, data.gameId, socket.id);
 
-    if(!newGame.maxPlayersReached()){
+    if(!newGame.maxPlayersReached()){ //AND PLAYER NOT IN GAME ALREADY
         console.log("new player joinded")
         await newGame.joinGame(data, socket.id);
     }else{
@@ -140,8 +220,9 @@ async function joinGame(data, socket){
     }
 
     if(newGame.hasStarted && newPlayer){
+        console.log("GAME WILL LOAD")
         await loadGame(newGame, newPlayer, socket);
-    }
+    } 
 
     socket.join(data.gameId);
 }

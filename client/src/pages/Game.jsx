@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { socket } from '../helper/socket';
 import { useParams } from "react-router-dom";
 import { generateId } from '../helper/helperFunctions';
+import Card from '../components/Card';
 
 
 
@@ -13,7 +14,7 @@ const Game = ({sessionId}) => {
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    const [playerCards, setPlayerCards] = useState("");
+    const [playerCards, setPlayerCards] = useState([]);
     const [playerPoints, setPlayerPoints] = useState("");
     const [trumpCard, setTrumpCard] = useState("");
     const [playersTurn, setPlayersTurn] = useState(false);
@@ -43,11 +44,10 @@ const Game = ({sessionId}) => {
         }
 
         function startGameData(data){
-            console.log(data)
-            setPlayerCards(data.playerCards);
-            setPlayerPoints(data.playerPoints);
-            setTrumpCard(data.trumpCard);
-            setPlayersTurn(data.playersTurn)
+            if (data.playerCards) setPlayerCards(data.playerCards);
+            if (data.playerPoints) setPlayerPoints(data.playerPoints);
+            if (data.trumpCard) setTrumpCard(data.trumpCard);
+            setPlayersTurn(data.playersTurn) 
         }
     
         socket.on("error_popup", errorPopuop);
@@ -60,20 +60,37 @@ const Game = ({sessionId}) => {
     }, []);
 
   
+    const cardPlayedEmit = (card) => {
+        socket.emit("play_card", {gameId: params.roomId, sessionId: sessionId, card: card}, function(){
+            setPlayersTurn(false) 
+        });
+    }
+    let listItems = null;
+
+    if(playerCards.length > 0){
+
+        var playerCardsVar = playerCards
+        listItems = playerCardsVar.map((d) => <Card key={d} card={d} cardPlayedEmit={cardPlayedEmit}></Card>);
+    } 
+    
     
     return  <div>
                 <h1>Game {params.roomId} </h1>
                 <h2>Session ID: {sessionId}</h2>
           
-                <button onClick={startGame}> Start Game</button>
+                <button onClick={() => {startGame()}}> Start Game</button>
                 { showErrorPopup && (<div> ERORR: {errorMessage}</div>)}
 
                 <h2>Game State:</h2>
                 <h3>Spieler an der Reihe: { playersTurn && ( "YES")}</h3>
-                <h3>Spieler Karten: {playerCards}</h3>
                 <h3>Spieler Punkte: {playerPoints}</h3>
                 <h3>Trumpf Karte: {trumpCard}</h3>
 
+                <h3>Spieler Karten: {playerCards}</h3>
+
+                <ul>
+                   {listItems}
+                </ul>
             </div>;
 };
   

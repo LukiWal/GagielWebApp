@@ -13,7 +13,7 @@ class Game{
         this.player3 = null;
         this.player4 = null;
         this.trumpCard = null;
-        this.hasStarted = true;
+        this.hasStarted = false;
     }
 
     createGame(data){
@@ -58,6 +58,7 @@ class Game{
             player.updatePlayer();
         }
 
+        this.hasStarted = true;
         return playerObjectArray;
     }
 
@@ -96,6 +97,7 @@ class Game{
             return;
         } 
     }
+    
 
     getPlayerArray(){
         const allPlayerArray = [this.player1, this.player2, this.player3, this.player4];
@@ -140,6 +142,8 @@ class Game{
         this.player2 = data[0].player2;
         this.player3 = data[0].player3;
         this.player4 = data[0].player4;
+        this.deckOfCards = JSON.parse(data[0].deckOfCards)
+        this.hasStarted = data[0].gameStarted;
 
         if(this.id != null){
             return("done");
@@ -169,7 +173,8 @@ class Game{
             player2 : this.player2,
             player3 : this.player3,
             player4 : this.player4,
-            deckOfCards : JSON.stringify(this.deckOfCards)
+            deckOfCards : JSON.stringify(this.deckOfCards),
+            gameStarted : this.hasStarted
         }
            
         db.promiseUpdate(sql, [values, this.gameId]);
