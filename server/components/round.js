@@ -11,6 +11,66 @@ class Round{
         this.card4 = null;
     }
 
+    playerIdForHighestCard(playerArray, playerToBeginnId, highestCardIndex){
+        let playerToBeginnIndex = playerArray.indexOf(playerToBeginnId);
+
+        let playerWithHighestCardIndex = playerToBeginnIndex + highestCardIndex;
+        let playerWithHighestCardId = playerArray[playerWithHighestCardIndex % playerArray.length]
+        
+        return playerWithHighestCardId;
+    }
+
+    evaluateRound(trumpCard){
+        let cardArray = this.getCardsArray();
+
+        let highestCard = cardArray[0];
+        let points = this.getValueOfCard(cardArray[0].split('_')[1]);
+
+        for(let i = 1; i < cardArray.length; i++){
+            points += this.getValueOfCard(cardArray[i].split('_')[1]);
+            if(this.compareCards(highestCard, cardArray[i], trumpCard)){
+                highestCard = cardArray[i];
+            }
+        }
+
+        return [points, cardArray.indexOf(highestCard)]
+    }
+
+    compareCards(card1, card2, trumpCard){
+        const [card1Color, card1Value] = card1.split('_');
+        const [card2Color, card2Value] = card2.split('_');
+        const [trumpCardColor, trumpCardValue] = trumpCard.split('_');
+      
+        if(card1Color == trumpCardColor && card2Color != trumpCardColor){
+            return false;
+        } else if(card1Color != trumpCardColor && card2Color == trumpCardColor){
+            return true;
+        } else{
+            if(this.getValueOfCard(card1Value) < this.getValueOfCard(card2Value)){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+
+    getValueOfCard(cardSymbol){
+        switch(cardSymbol) {
+            case '7':
+                return 0;
+            case '10':
+                return 10;
+            case 'U':
+                return 2;
+            case 'O':
+                return 3;
+            case 'K':
+                return 4;
+            case 'A':
+                return 11;
+          }
+    }
+
     allCardsPlayed(playerArray){
         const cardsArray = this.getCardsArray();
 
@@ -31,18 +91,26 @@ class Round{
         let playerIdToPlay = playerArray[playerIndexToPlay % playerArray.length]
 
         if(playerIdToPlay == playerId){
-            console.log("Players turn")
             return true;
         } else{
-            console.log("Not your turn ")
             return false;
         }
+    }
+
+    getCurrentPlayerId(playerArray){
+        let playerToBeginnIndex = playerArray.indexOf(this.playerToBeginn);
+
+
+        let playerToBeginnId = playerArray[playerToBeginnIndex % playerArray.length]
+        
+        return playerToBeginnId;
     }
 
     getNextPlayerId(playerArray){
         let playerToBeginnIndex = playerArray.indexOf(this.playerToBeginn);
 
-        playerToBeginnIndex = playerToBeginnIndex + 1;
+        let cardsPlayed = this.getCardsArray().length;
+        playerToBeginnIndex = playerToBeginnIndex + cardsPlayed;
         let playerToBeginnId = playerArray[playerToBeginnIndex % playerArray.length]
         
         return playerToBeginnId;

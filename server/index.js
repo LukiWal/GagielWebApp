@@ -42,9 +42,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("play_card", (data, callback) => {
-        console.log(data.sessionId +" played: " +data.card)
-        playCard(data)
-        callback()
+        playCard(data, callback)
     });
 
     /* socket.on("load_game", (data) => {
@@ -59,7 +57,7 @@ io.on("connection", (socket) => {
 
 });
 
-async function playCard(data){
+async function playCard(data, callback){
     let currentRound = new Round()
     await currentRound.fetchCurrentRoundByGameId(data.gameId);
 
@@ -75,71 +73,93 @@ async function playCard(data){
     if(currentRound.checkIfItsPlayersTurn(playerArray, playerId)){
         currentRound.playCard(data.card);
         player.removeCard(data.card);
-       /*  const newCard = game.getCards(1);
-        player.drawCard(newCard); */
+       
+        await player.updatePlayer();
+        currentRound.updateRound();
 
-        let nextPlayerId = currentRound.getNextPlayerId(playerArray);
-        let nextPlayer = new Player();
-        await nextPlayer.fetchPlayerById(playerId);
-
-        
-
-        io.to(nextPlayer.socketId).emit("load_start_game", {
-            playersTurn : true
+        io.in(data.gameId).emit("load_start_game", {
+            currentCard : data.card
         })
 
         if(currentRound.allCardsPlayed(playerArray)){
-            //Evaluate round 
-            //check if sb won 
-            
+            const [points, highestCardIndex] = currentRound.evaluateRound(game.trumpCard);
+            const playerIdForHighestCard = currentRound.playerIdForHighestCard(playerArray, currentRound.playerToBeginn, highestCardIndex);
 
-            //else draw cards for every player and send it to them 
-            
+            let playerWon = new Player();
+            await playerWon.fetchPlayerById(playerIdForHighestCard);
 
-            let newRound = new Round(data.gameId, nextPlayerId);
+            io.to(playerWon.socketId).emit("error_popup", "YOU WON :))");
+            playerWon.points += points; 
+
+            callback();
+
+            io.to(playerWon.socketId).emit("load_start_game", {
+                playerPoints : playerWon.points,
+                playersTurn : true
+            })
+        
+            await playerWon.updatePlayer();
+            //Check if player points > 101 
+                //Send game won message
+
+            for(let i = 0; i < playerArray.length; i++){
+                let player = new Player();
+                await player.fetchPlayerById(playerArray[i]);
+                player.addCard(game.getCards(1));
+
+                await game.updateGame();
+
+               
+                gameData = {
+                    playerCards : player.cards, 
+                }
+
+                io.to(player.socketId).emit("load_start_game", gameData)
+
+                player.updatePlayer();
+            }
+
+
+            let newRound = new Round(data.gameId, playerIdForHighestCard);
             newRound.saveRound();
+
+            return;
         }
+
+        let nextPlayerId = currentRound.getNextPlayerId(playerArray);
+        let nextPlayer = new Player();
+        await nextPlayer.fetchPlayerById(nextPlayerId);
+
+        if(nextPlayer.playerId != player.playerId){
+            callback();
+            io.to(nextPlayer.socketId).emit("load_start_game", {
+                playersTurn : true
+            }) 
+        } 
     }
-    
-
-    //All players turn false exept
-    io.to(player.socketId).emit("load_start_game", {
-        playerCards : player.cards
-    })
-
-
-
-    
-    //Check if players turn
-
-    
-
-
-
-    //Check if players turn
-        //check if player has card
-            //play card
-            //if all cards played:
-                //evaluate round
-                //check if a player has won
-
-                //else: 
-                    //create new round with new player to beginn with
-                    
-
-
-    currentRound.updateRound();
-    game.updateGame();
-    player.updatePlayer();
 }
 
 async function loadGame(game, player, socket){
-    await player.fetchPlayerById(player.playerId)
+    await player.fetchPlayerById(player.playerId);
+
+    let currentRound = new Round()
+    await currentRound.fetchCurrentRoundByGameId(game.gameId);
+
+    let playerArray = game.getPlayerArray()
+    let nextPlayerId = currentRound.getNextPlayerId(playerArray);
+
+    let playersTurn = false; 
+    
+    if(player.playerId == nextPlayerId){
+        playersTurn = true;
+    }
 
     io.to(player.socketId).emit("load_start_game", {
         playerCards : player.cards, 
-        playerPoints : 20,
-        trumpCard: game.trumpCard
+        playerPoints : player.points,
+        trumpCard: game.trumpCard,
+        currentCard : "tste",
+        playersTurn : playersTurn
     })
 
 }
@@ -170,15 +190,15 @@ async function startGame(data, socket){
 
     for(let i = 0; i < playerObejctArray.length; i++){
         const player = playerObejctArray[i]
-        //console.log(typeof(player.cards))
+
 
         gameData = {
             playerCards : player.cards, 
-            playerPoints : 20,
+            playerPoints : player.points,
             trumpCard: newGame.trumpCard
         }
 
-        //console.log("PlayerId: " +player.playerId +" PlayerToBeginn: " +firstRound.playerToBeginn)
+       
         if(player.playerId == firstRound.playerToBeginn){
             gameData.playersTurn = true
         } else {
@@ -220,7 +240,6 @@ async function joinGame(data, socket){
     }
 
     if(newGame.hasStarted && newPlayer){
-        console.log("GAME WILL LOAD")
         await loadGame(newGame, newPlayer, socket);
     } 
 
@@ -229,18 +248,17 @@ async function joinGame(data, socket){
 
 
 
-/* async function test(){
+async function test(){
     let newRound = new Round()
-    newRound.gameId = "AAAAAA"
-    newRound.playeToBeginn = 9
-
-    newRound.saveRound() 
     
-    await newRound.fetchCurrentRoundByGameId("AAAAAA");
-    console.log(newRound)
+    newRound.card1 = "S_10";
+    newRound.card2 = "H_7";
+    newRound.card3 = "S_A";
+    newRound.card4 = "H_K";
+    //await newRound.fetchCurrentRoundByGameId("AAAAAA");
 }
 
-test()  */
+//test()  
 
 server.listen(8800, () =>{
     console.log("SERVER IS RUNNING...")

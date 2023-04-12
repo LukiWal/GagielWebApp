@@ -6,12 +6,11 @@ class Player{
         this.sessionId = sessionId
         this.gameId = gameId
         this.socketId = socketId
+        this.points = null
         this.cards = null
     }
 
     removeCard(card){
-        console.log(this.cards)
-        console.log(typeof(this.cards))
         const index = this.cards.indexOf(card);
         if (index > -1) { // only splice array when item is found
             this.cards.splice(index, 1);
@@ -20,7 +19,7 @@ class Player{
         }
     }
 
-    drawCard(newCard){
+    addCard(newCard){
         this.cards = this.cards.concat(newCard);
     }
 
@@ -39,7 +38,7 @@ class Player{
     async fetchPlayerById(playerId){
         
         const sql = "SELECT * FROM `players` WHERE `playerId`='" +playerId +"'"
-        console.log(sql)
+
         let data = await db.promise(sql);
 
         
@@ -47,6 +46,7 @@ class Player{
         this.sessionId = data[0].sessionId
         this.gameId = data[0].gameId
         this.socketId = data[0].socketId
+        this.points = data[0].points
         this.cards = JSON.parse(data[0].cards)
 
         if(this.playerId != null){
@@ -80,6 +80,10 @@ class Player{
 
         if(this.cards){
             values.cards = JSON.stringify(this.cards) 
+        }
+
+        if(this.points){
+            values.points = this.points
         }
            
         await db.promiseUpdate(sql, [values, this.playerId]);

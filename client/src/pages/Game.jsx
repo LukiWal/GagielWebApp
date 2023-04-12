@@ -2,7 +2,6 @@ import React from 'react';
 import { useEffect, useState } from "react";
 import { socket } from '../helper/socket';
 import { useParams } from "react-router-dom";
-import { generateId } from '../helper/helperFunctions';
 import Card from '../components/Card';
 
 
@@ -16,6 +15,7 @@ const Game = ({sessionId}) => {
 
     const [playerCards, setPlayerCards] = useState([]);
     const [playerPoints, setPlayerPoints] = useState("");
+    const [currentCard, setCurrentCard] = useState("");
     const [trumpCard, setTrumpCard] = useState("");
     const [playersTurn, setPlayersTurn] = useState(false);
     
@@ -47,7 +47,8 @@ const Game = ({sessionId}) => {
             if (data.playerCards) setPlayerCards(data.playerCards);
             if (data.playerPoints) setPlayerPoints(data.playerPoints);
             if (data.trumpCard) setTrumpCard(data.trumpCard);
-            setPlayersTurn(data.playersTurn) 
+            if(data.playersTurn) setPlayersTurn(data.playersTurn) 
+            if(data.currentCard) setCurrentCard(data.currentCard)
         }
     
         socket.on("error_popup", errorPopuop);
@@ -85,6 +86,7 @@ const Game = ({sessionId}) => {
                 <h3>Spieler an der Reihe: { playersTurn && ( "YES")}</h3>
                 <h3>Spieler Punkte: {playerPoints}</h3>
                 <h3>Trumpf Karte: {trumpCard}</h3>
+                <h3>Current Card: {currentCard}</h3>
 
                 <h3>Spieler Karten: {playerCards}</h3>
 

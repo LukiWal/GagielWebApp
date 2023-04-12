@@ -143,6 +143,7 @@ class Game{
         this.player3 = data[0].player3;
         this.player4 = data[0].player4;
         this.deckOfCards = JSON.parse(data[0].deckOfCards)
+        this.trumpCard = data[0].trumpCard;
         this.hasStarted = data[0].gameStarted;
 
         if(this.id != null){
@@ -174,7 +175,8 @@ class Game{
             player3 : this.player3,
             player4 : this.player4,
             deckOfCards : JSON.stringify(this.deckOfCards),
-            gameStarted : this.hasStarted
+            gameStarted : this.hasStarted,
+            trumpCard : this.trumpCard,
         }
            
         db.promiseUpdate(sql, [values, this.gameId]);
