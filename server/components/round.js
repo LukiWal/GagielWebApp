@@ -37,9 +37,9 @@ class Round{
     }
 
     compareCards(card1, card2, trumpCard){
-        const [card1Color, card1Value] = card1.split('_');
-        const [card2Color, card2Value] = card2.split('_');
-        const [trumpCardColor, trumpCardValue] = trumpCard.split('_');
+        const [card1Color, card1Value] = card1.split(":").pop().split('_');
+        const [card2Color, card2Value] = card2.split(":").pop().split('_');
+        const [trumpCardColor, trumpCardValue] = trumpCard.split(":").pop().split('_');
       
         if(card1Color == trumpCardColor && card2Color != trumpCardColor){
             return false;

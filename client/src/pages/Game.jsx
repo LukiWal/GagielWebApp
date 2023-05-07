@@ -24,6 +24,14 @@ const Game = ({sessionId}) => {
         socket.emit("start_game", { gameId: params.roomId});
     };
 
+    const meldCard = (card) => {
+        socket.emit("meld_card", { card, gameId: params.roomId, sessionId: sessionId});
+    };
+
+    const exchangeTrump = () =>{
+        socket.emit("exchange_trump", {gameId: params.roomId, sessionId: sessionId});
+    }
+
 
     useEffect(() => {
         console.log("JOIN ROOM")
@@ -44,9 +52,9 @@ const Game = ({sessionId}) => {
         }
 
         function startGameData(data){
-            if (data.playerCards) setPlayerCards(data.playerCards);
-            if (data.playerPoints) setPlayerPoints(data.playerPoints);
-            if (data.trumpCard) setTrumpCard(data.trumpCard);
+            if(data.playerCards) setPlayerCards(data.playerCards);
+            if(data.playerPoints) setPlayerPoints(data.playerPoints);
+            if(data.trumpCard) setTrumpCard(data.trumpCard);
             if(data.playersTurn) setPlayersTurn(data.playersTurn) 
             if(data.currentCard) setCurrentCard(data.currentCard)
         }
@@ -69,9 +77,8 @@ const Game = ({sessionId}) => {
     let listItems = null;
 
     if(playerCards.length > 0){
-
         var playerCardsVar = playerCards
-        listItems = playerCardsVar.map((d) => <Card key={d} card={d} cardPlayedEmit={cardPlayedEmit}></Card>);
+        listItems = playerCardsVar.map((d) => <Card key={d} card={d} meldCard={meldCard} cardPlayedEmit={cardPlayedEmit}></Card>);
     } 
     
     
@@ -88,8 +95,9 @@ const Game = ({sessionId}) => {
                 <h3>Trumpf Karte: {trumpCard}</h3>
                 <h3>Current Card: {currentCard}</h3>
 
+                <button onClick={() => {exchangeTrump()}}> Tausch Trumpf</button>
                 <h3>Spieler Karten: {playerCards}</h3>
-
+                
                 <ul>
                    {listItems}
                 </ul>

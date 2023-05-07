@@ -45,6 +45,13 @@ io.on("connection", (socket) => {
         playCard(data, callback)
     });
 
+    socket.on("meld_card", (data) => {
+        meldCard(data);
+    }); 
+
+    socket.on("exchange_trump", (data) => {
+        exchangeTrump(data);
+    }); 
     /* socket.on("load_game", (data) => {
         loadGame(data, socket);
     }); */
@@ -89,6 +96,7 @@ async function playCard(data, callback){
             await playerWon.fetchPlayerById(playerIdForHighestCard);
 
             io.to(playerWon.socketId).emit("error_popup", "YOU WON :))");
+            playerWon.trick = true;
             playerWon.points += points; 
 
             callback();
@@ -109,7 +117,6 @@ async function playCard(data, callback){
 
                 await game.updateGame();
 
-               
                 gameData = {
                     playerCards : player.cards, 
                 }
@@ -137,6 +144,56 @@ async function playCard(data, callback){
             }) 
         } 
     }
+}
+
+async function meldCard(data){
+    let player = new Player(data.sessionId, data.gameId);
+    let playerId = await player.doesPlayerExist();
+    await player.fetchPlayerById(playerId);
+
+    let game = new Game();
+    await game.fetchGame(data.gameId)
+    
+    player.playerMeldCard(data.card, game.trumpCard)
+
+}
+
+async function exchangeTrump(data){
+    let player = new Player(data.sessionId, data.gameId);
+    let playerId = await player.doesPlayerExist();
+    await player.fetchPlayerById(playerId);
+
+    let currentRound = new Round()
+    await currentRound.fetchCurrentRoundByGameId(data.gameId);
+
+    let game = new Game();
+    await game.fetchGame(data.gameId)
+
+    const [trumpColor, trumpValue] = game.trumpCard.split(":").pop().split('_');
+
+    if(playerId == currentRound.playerToBeginn && !currentRound.card1 && player.trick){
+        let trumpSeven = player.cards.filter(element => element.includes(trumpColor +"_7"))
+        if(trumpSeven.length > 0){
+            player.cards.pop(trumpSeven);
+            player.cards.push(game.trumpCard)
+            game.trumpCard = trumpSeven
+
+            let playerData = {
+                playerCards : player.cards
+            }
+
+            let newTrumpData = {
+                trumpCard: game.trumpCard
+            }
+        
+            io.to(player.socketId).emit("load_start_game", playerData)
+            io.to(game.gameId).emit("load_start_game", newTrumpData);
+        }
+    }
+
+    game.updateGame();
+    player.updatePlayer();
+
 }
 
 async function loadGame(game, player, socket){
@@ -208,7 +265,7 @@ async function startGame(data, socket){
         io.to(player.socketId).emit("load_start_game", gameData)
     }
 
-    newGame.updateGame();
+    newGame.updateGame(); 
 }
 
 async function joinGame(data, socket){

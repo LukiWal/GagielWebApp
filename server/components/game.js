@@ -176,7 +176,7 @@ class Game{
             player4 : this.player4,
             deckOfCards : JSON.stringify(this.deckOfCards),
             gameStarted : this.hasStarted,
-            trumpCard : this.trumpCard,
+            trumpCard : this.trumpCard
         }
            
         db.promiseUpdate(sql, [values, this.gameId]);

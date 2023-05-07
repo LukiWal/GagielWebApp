@@ -8,6 +8,10 @@ const createDeckOfCards=()=>{
     
     let deckOfCards = sortedDeckOfCards.concat(sortedDeckOfCards);
 
+    for(var i = 0; i < deckOfCards.length; i++){
+        deckOfCards[i] = i.toString().concat(':', deckOfCards[i])
+    }
+
     //Durstenfeld Shuffle
     for (var i = deckOfCards.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
@@ -18,4 +22,6 @@ const createDeckOfCards=()=>{
     return deckOfCards;
 }
 
+console.log(createDeckOfCards())
 module.exports = createDeckOfCards
+

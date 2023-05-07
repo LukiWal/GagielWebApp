@@ -8,6 +8,7 @@ class Player{
         this.socketId = socketId
         this.points = null
         this.cards = null
+        this.trick = false
     }
 
     removeCard(card){
@@ -21,6 +22,34 @@ class Player{
 
     addCard(newCard){
         this.cards = this.cards.concat(newCard);
+    }
+
+    playerMeldCard(card, trump){
+        if(this.doesPlayerHaveCard(card)){
+            let card = card.split(":").pop();
+            const [card1Color, card1Value] = card.split('_');
+
+            const [trumpColor, trumpValue] = trump.split(":").pop().split('_');
+
+            this.cards.forEach(card => {
+                    const [card2Color, card2Value] = card.split(":").pop().split('_');
+                    if(card1Color == card2Color){
+                        if(card1Value == "O" && card2Value == "K" || card2Value == "O" && card1Value == "K"){
+                            if(trumpColor == card1Color){
+                                this.points += 40;
+                            } else{
+                                this.points += 20;
+                            }
+                        }
+                    }
+                }
+            )
+
+        }
+    }
+
+    doesPlayerHaveCard(card){
+        return this.cards.includes(card);
     }
 
     async doesPlayerExist(){
@@ -48,7 +77,7 @@ class Player{
         this.socketId = data[0].socketId
         this.points = data[0].points
         this.cards = JSON.parse(data[0].cards)
-
+        this.trick = data[0].trick
         if(this.playerId != null){
             return("done");
         } else{
@@ -75,7 +104,8 @@ class Player{
         let values = {
             sessionId : this.sessionId,
             gameId : this.gameId,
-            socketId: this.socketId
+            socketId: this.socketId,
+            trick: this.trick
         }
 
         if(this.cards){
