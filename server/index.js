@@ -78,8 +78,26 @@ async function playCard(data, callback){
     let playerArray = game.getPlayerArray();
     
     if(currentRound.checkIfItsPlayersTurn(playerArray, playerId)){
-        currentRound.playCard(data.card);
-        player.removeCard(data.card);
+        if(game.deckOfCards.length >= 1 || !currentRound.card1){
+            currentRound.playCard(data.card);
+            player.removeCard(data.card);
+        }else{
+            if(currentRound.playCardWithServe(data.card, game.trumpCard, player.cards)){
+                player.removeCard(data.card);
+            } else{
+                io.to(player.socketId).emit("error_popup", "YOU HAVE TO SERVER CARDS");
+                return;
+            }
+        }
+
+        if(player.trick){
+            let meldCard = player.playerMeldCard(data.card, game.trumpCard)
+            if(meldCard){
+                //Emit Meld 
+            };
+        }
+      
+       
        
         await player.updatePlayer();
         currentRound.updateRound();

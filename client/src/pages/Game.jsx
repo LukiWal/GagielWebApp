@@ -18,7 +18,6 @@ const Game = ({sessionId}) => {
     const [currentCard, setCurrentCard] = useState("");
     const [trumpCard, setTrumpCard] = useState("");
     const [playersTurn, setPlayersTurn] = useState(false);
-    
 
     const startGame = () => {
         socket.emit("start_game", { gameId: params.roomId});
@@ -73,7 +72,9 @@ const Game = ({sessionId}) => {
         socket.emit("play_card", {gameId: params.roomId, sessionId: sessionId, card: card}, function(){
             setPlayersTurn(false) 
         });
+    
     }
+
     let listItems = null;
 
     if(playerCards.length > 0){
@@ -101,6 +102,8 @@ const Game = ({sessionId}) => {
                 <ul>
                    {listItems}
                 </ul>
+
+             
             </div>;
 };
   

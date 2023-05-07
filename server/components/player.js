@@ -9,6 +9,7 @@ class Player{
         this.points = null
         this.cards = null
         this.trick = false
+        this.meldedCards = []
     }
 
     removeCard(card){
@@ -25,27 +26,29 @@ class Player{
     }
 
     playerMeldCard(card, trump){
-        if(this.doesPlayerHaveCard(card)){
-            let card = card.split(":").pop();
-            const [card1Color, card1Value] = card.split('_');
+        const [card1Color, card1Value] = card.split(":").pop().split('_');
 
-            const [trumpColor, trumpValue] = trump.split(":").pop().split('_');
+        const [trumpColor, trumpValue] = trump.split(":").pop().split('_');
 
-            this.cards.forEach(card => {
-                    const [card2Color, card2Value] = card.split(":").pop().split('_');
-                    if(card1Color == card2Color){
-                        if(card1Value == "O" && card2Value == "K" || card2Value == "O" && card1Value == "K"){
-                            if(trumpColor == card1Color){
-                                this.points += 40;
-                            } else{
-                                this.points += 20;
-                            }
+        this.cards.forEach(cardPlayerDeck => {
+                const [card2Color, card2Value] = cardPlayerDeck.split(":").pop().split('_');
+                if(card1Color == card2Color && !this.meldedCards.includes(card) && !this.meldedCards.includes(cardPlayerDeck)){
+                    if(card1Value == "O" && card2Value == "K" || card2Value == "O" && card1Value == "K"){
+                        this.meldedCards.push(cardPlayerDeck, card);
+                        if(trumpColor == card1Color){
+                            this.points += 40;
+                            return 40;
+                        } else{
+                            this.points += 20;
+                            return 20;
                         }
                     }
                 }
-            )
+            }
+        )
 
-        }
+        return false;
+        
     }
 
     doesPlayerHaveCard(card){
@@ -78,6 +81,7 @@ class Player{
         this.points = data[0].points
         this.cards = JSON.parse(data[0].cards)
         this.trick = data[0].trick
+        this.meldedCards = JSON.parse(data[0].meldedCards)
         if(this.playerId != null){
             return("done");
         } else{
@@ -110,6 +114,10 @@ class Player{
 
         if(this.cards){
             values.cards = JSON.stringify(this.cards) 
+        }
+
+        if(this.meldedCards){
+            values.meldedCards = JSON.stringify(this.meldedCards) 
         }
 
         if(this.points){

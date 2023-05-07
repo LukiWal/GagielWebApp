@@ -46,7 +46,7 @@ class Round{
         } else if(card1Color != trumpCardColor && card2Color == trumpCardColor){
             return true;
         } else{
-            if(this.getValueOfCard(card1Value) < this.getValueOfCard(card2Value)){
+            if(card1Color == card2Color && this.getValueOfCard(card1Value) < this.getValueOfCard(card2Value)){
                 return true;
             }else{
                 return false;
@@ -133,6 +133,32 @@ class Round{
         const randomPlayerId = playerArray[Math.floor(Math.random() * playerArray.length)];
 
         this.playerToBeginn = randomPlayerId;
+    }
+
+    playCardWithServe(playedCard, trumpCard, playerCards){
+        const [playedCardColor, playedCardValue] = playedCard.split(":").pop().split('_');
+        const [trumpCardColor, trumpCardValue] = trumpCard.split(":").pop().split('_');
+        const [firstCardColor, firstCardValue] = this.card1.split(":").pop().split('_');
+
+        let playerHasColorFirstCard = Boolean(playerCards.filter(element => element.includes(firstCardColor)).length);
+        let playerHasTrump = Boolean(playerCards.filter(element => element.includes(trumpCardColor)).length);
+
+        if(playedCardColor == firstCardColor){
+            this.playCard(playedCard)
+            return true;
+        } 
+
+        if(playedCardColor == trumpCardColor && !playerHasColorFirstCard){
+            this.playCard(playedCard);
+            return true;
+        } 
+
+        if(!playerHasColorFirstCard && !playerHasTrump){
+            this.playCard(playedCard);
+            return true;
+        } 
+
+        return false;
     }
 
     playCard(card){
