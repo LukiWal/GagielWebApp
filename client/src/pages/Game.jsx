@@ -79,7 +79,7 @@ const Game = ({sessionId}) => {
 
     if(playerCards.length > 0){
         var playerCardsVar = playerCards
-        listItems = playerCardsVar.map((d) => <Card key={d} card={d} meldCard={meldCard} cardPlayedEmit={cardPlayedEmit}></Card>);
+        listItems = playerCardsVar.map((d) => <Card key={d} card={d} cardPlayedEmit={cardPlayedEmit}></Card>);
     } 
     
     
@@ -97,11 +97,14 @@ const Game = ({sessionId}) => {
                 <h3>Current Card: {currentCard}</h3>
 
                 <button onClick={() => {exchangeTrump()}}> Tausch Trumpf</button>
-                <h3>Spieler Karten: {playerCards}</h3>
+                <h3>Spieler Karten:</h3>
+                <div className='playerCardsWrapper'>
+                    <div className="playerCards"> 
+                        {listItems}
+                    </div>
+                </div>
                 
-                <ul>
-                   {listItems}
-                </ul>
+               
 
              
             </div>;
