@@ -2,7 +2,7 @@ import React from 'react';
 import './card.scss';
 
 
-const Card = ({ card, cardPlayedEmit}) => {
+const Card = ({ card, cardPlayedEmit, height, width}) => {
     let cardNumber = card.split(":").pop().split('_')[1];
     let cardColor = card.split(":").pop().split('_')[0];
 
@@ -24,7 +24,7 @@ const Card = ({ card, cardPlayedEmit}) => {
       default:
         cardColorUrl = "/hearth.svg"
     }
-    return <div className="card"> 
+    return <div className="card" style={{height: height, width: width}} > 
         <button onClick={() => {cardPlayedEmit(card)}}> Play Card {card} </button>
         <img class="symbol symbol-top" src={cardColorUrl}></img>
         <img class="symbol symbol-bottom" src={cardColorUrl}></img>

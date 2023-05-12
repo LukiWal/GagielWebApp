@@ -9,12 +9,13 @@
     //height: 30vw;
     display: flex;
     justify-content: space-around;
+    align-items: center;
 }
 
 .card{
-    max-height: 100%;
-    width: 18%;
-    aspect-ratio: 1 / 1.6;
+    //max-height: 100%;
+    //width: 18%;
+    //aspect-ratio: 1 / 1.6;
     //margin: 0 20px 0 20px;
     position: relative;
 }

@@ -14,14 +14,23 @@ import 'react-toastify/dist/ReactToastify.css';
 const Game = ({sessionId}) => {
     
     let params = useParams();
-    const [showErrorPopup, setShowErrorPopup] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
 
     const [playerCards, setPlayerCards] = useState([]);
     const [playerPoints, setPlayerPoints] = useState("");
     const [currentCards, setCurrentCards] = useState([]);
     const [trumpCard, setTrumpCard] = useState("");
     const [playersTurn, setPlayersTurn] = useState(false);
+
+    const [cardHeight, setCardHeight] = useState(0);
+    const [cardWidth, setCardWidth] = useState(0);
+
+    const [playerArray, setPlayerArray] = useState([]);
+    const [enemyPoints, setEnemyPoints] = useState([0,0,0]);
+    const [maxPlayers, setMaxPlayers] = useState(0);
+    const [playersTurn2, setPlayersTurn2] = useState(0);
+    const [playerWon, setPlayerWon] = useState(0);
+
+
 
     const startGame = () => {
         socket.emit("start_game", { gameId: params.roomId});
@@ -50,11 +59,6 @@ const Game = ({sessionId}) => {
     },[] );
     
     useEffect(() => {
-        function errorPopuop(data){   
-            setShowErrorPopup(true);
-            setErrorMessage(data);
-        }
-
         function notify (message) {
             console.log("NOTIFY ME")
             toast(message);
@@ -64,15 +68,16 @@ const Game = ({sessionId}) => {
             if(data.playerCards) setPlayerCards(data.playerCards);
             if(data.playerPoints) setPlayerPoints(data.playerPoints);
             if(data.trumpCard) setTrumpCard(data.trumpCard);
-            if(data.playersTurn) setPlayersTurn(data.playersTurn) 
-            if(data.currentCards) setCurrentCards(data.currentCards)
+            if(data.playersTurn) setPlayersTurn(data.playersTurn);
+            if(data.currentCards) setCurrentCards(data.currentCards);
+            if(data.playerArray) setPlayerArray(data.playerArray)
         }
     
         socket.on("error_popup", notify);
         socket.on("load_start_game", startGameData);
 
         return () => {
-            socket.off('error_popup', errorPopuop);
+            socket.off('error_popup', notify);
             socket.off("load_start_game", startGameData);
         }
     }, []);
@@ -86,10 +91,11 @@ const Game = ({sessionId}) => {
     }
 
     let listItems = null;
+    
 
     if(playerCards.length > 0){
         var playerCardsVar = playerCards
-        listItems = playerCardsVar.map((card) => <Card key={card} card={card} cardPlayedEmit={cardPlayedEmit}></Card>);
+        listItems = playerCardsVar.map((card) => <Card key={card} width={cardWidth} height={cardHeight} card={card} cardPlayedEmit={cardPlayedEmit}></Card>);
     } 
     
     let currentCardsList = null;
@@ -99,6 +105,49 @@ const Game = ({sessionId}) => {
         console.log(currentCards)
         currentCardsList = currentCardsVar.map((card) => <CardNormal key={card} card={card}></CardNormal>);
     } 
+
+    
+    const size = useWindowSize();
+
+    function useWindowSize() {
+        const [windowSize, setWindowSize] = useState({
+          width: undefined,
+          height: undefined,
+        });
+        useEffect(() => {
+          function handleResize() {
+           
+            setWindowSize({
+              width: window.innerWidth,
+              height: window.innerHeight,
+            });
+          }
+         
+          window.addEventListener("resize", handleResize);
+      
+          handleResize();
+      
+          return () => window.removeEventListener("resize", handleResize);
+        }, []); 
+        return windowSize;
+    }
+
+    useEffect(() => {
+        const ASPECT_RATIO = 1.6;
+        let maxWidthCard = size.width * 0.95 * 0.9 * (1 / playerCards.length);
+        let maxHeightCard = size.height * 0.3 * 0.95;
+
+        let width = maxWidthCard;
+        let height = maxWidthCard * ASPECT_RATIO;
+
+        if(height>maxHeightCard){
+            width = maxHeightCard / ASPECT_RATIO;
+            height = maxHeightCard;
+        }
+        
+        setCardWidth(width);
+        setCardHeight(height);   
+    },[size, playerCards] );
 
     return  <div className='playground'>
 {               /* <h1>Game {params.roomId} </h1>
@@ -119,6 +168,7 @@ const Game = ({sessionId}) => {
                 <div className='currentCardsWrapper'>
                     <div className="currentCards">
                         {currentCardsList}
+                        <h2>{playerArray}</h2>
                     </div>
                 </div>
                 <div className="playerControllsWrapper">
@@ -126,9 +176,7 @@ const Game = ({sessionId}) => {
                     <h3>Spieler an der Reihe: { playersTurn && ( "YES")}</h3>
                     <button onClick={() => {startGame()}}> Start Game</button>
                     <button onClick={() => {exchangeTrump()}}> Tausch Trumpf</button>
-                </div>
-              
-               
+                </div>           
                 <div className='playerCardsWrapper'>
                     <div className="playerCards"> 
                         {listItems}

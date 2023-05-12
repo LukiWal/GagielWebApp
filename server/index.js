@@ -85,7 +85,7 @@ async function playCard(data, callback){
             if(currentRound.playCardWithServe(data.card, game.trumpCard, player.cards)){
                 player.removeCard(data.card);
             } else{
-                io.to(player.socketId).emit("error_popup", "YOU HAVE TO SERVER CARDS");
+                io.to(player.socketId).emit("error_popup", "YOU HAVE TO SERVE CARDS");
                 return;
             }
         }
@@ -96,14 +96,12 @@ async function playCard(data, callback){
                 //Emit Meld 
             };
         }
-      
-       
-       
+    
         await player.updatePlayer();
         currentRound.updateRound();
 
         io.in(data.gameId).emit("load_start_game", {
-            currentCard : data.card
+            currentCards : currentRound.getCardsArray()
         })
 
         if(currentRound.allCardsPlayed(playerArray)){
@@ -218,6 +216,7 @@ async function loadGame(game, player, socket){
     await player.fetchPlayerById(player.playerId);
 
     let currentRound = new Round()
+    console.log(game.gameId)
     await currentRound.fetchCurrentRoundByGameId(game.gameId);
 
     let playerArray = game.getPlayerArray()
@@ -233,8 +232,8 @@ async function loadGame(game, player, socket){
         playerCards : player.cards, 
         playerPoints : player.points,
         trumpCard: game.trumpCard,
-        currentCard : "tste",
-        playersTurn : playersTurn
+        playersTurn : playersTurn,
+        currentCards: currentRound.getCardsArray(),
     })
 
 }
@@ -266,11 +265,20 @@ async function startGame(data, socket){
     for(let i = 0; i < playerObejctArray.length; i++){
         const player = playerObejctArray[i]
 
+        // player.id
+        
+        let indexOfPlayer = playerArray.indexOf(player.id);
+    
+        firstArrayPart = playerArray.slice(0, indexOfPlayer);
+        secondArrayPart = playerArray.slice(indexOfPlayer);
 
+        playerArray = secondArrayPart.concat(firstArrayPart);
+        
         gameData = {
             playerCards : player.cards, 
             playerPoints : player.points,
-            trumpCard: newGame.trumpCard
+            trumpCard: newGame.trumpCard,
+            playerArray: playerArray
         }
 
        
