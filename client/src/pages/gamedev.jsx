@@ -3,11 +3,7 @@ import { useEffect, useState } from "react";
 import { socket } from '../helper/socket';
 import { useParams } from "react-router-dom";
 import Card from '../components/Card';
-import CardNormal from '../components/CardNormal'
-import Player from '../components/Player';
-import './game.scss';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
 
 
 
@@ -19,7 +15,7 @@ const Game = ({sessionId}) => {
 
     const [playerCards, setPlayerCards] = useState([]);
     const [playerPoints, setPlayerPoints] = useState("");
-    const [currentCards, setCurrentCards] = useState([]);
+    const [currentCard, setCurrentCard] = useState("");
     const [trumpCard, setTrumpCard] = useState("");
     const [playersTurn, setPlayersTurn] = useState(false);
 
@@ -35,7 +31,6 @@ const Game = ({sessionId}) => {
         socket.emit("exchange_trump", {gameId: params.roomId, sessionId: sessionId});
     }
 
-    
 
     useEffect(() => {
         console.log("JOIN ROOM")
@@ -55,20 +50,15 @@ const Game = ({sessionId}) => {
             setErrorMessage(data);
         }
 
-        function notify (message) {
-            console.log("NOTIFY ME")
-            toast(message);
-        }
-
         function startGameData(data){
             if(data.playerCards) setPlayerCards(data.playerCards);
             if(data.playerPoints) setPlayerPoints(data.playerPoints);
             if(data.trumpCard) setTrumpCard(data.trumpCard);
             if(data.playersTurn) setPlayersTurn(data.playersTurn) 
-            if(data.currentCards) setCurrentCards(data.currentCards)
+            if(data.currentCard) setCurrentCard(data.currentCard)
         }
     
-        socket.on("error_popup", notify);
+        socket.on("error_popup", errorPopuop);
         socket.on("load_start_game", startGameData);
 
         return () => {
@@ -89,46 +79,25 @@ const Game = ({sessionId}) => {
 
     if(playerCards.length > 0){
         var playerCardsVar = playerCards
-        listItems = playerCardsVar.map((card) => <Card key={card} card={card} cardPlayedEmit={cardPlayedEmit}></Card>);
+        listItems = playerCardsVar.map((d) => <Card key={d} card={d} cardPlayedEmit={cardPlayedEmit}></Card>);
     } 
     
-    let currentCardsList = null;
-
-    if(currentCards.length > 0){
-        var currentCardsVar = currentCards;
-        console.log(currentCards)
-        currentCardsList = currentCardsVar.map((card) => <CardNormal key={card} card={card}></CardNormal>);
-    } 
-
-    return  <div className='playground'>
-{               /* <h1>Game {params.roomId} </h1>
-                <h2>Session ID: {sessionId}</h2> */}
+    
+    return  <div>
+                <h1>Game {params.roomId} </h1>
+                <h2>Session ID: {sessionId}</h2>
           
-              
-                          
-                
-               <div className="gameControllsWrapper">
+                <button onClick={() => {startGame()}}> Start Game</button>
+                { showErrorPopup && (<div> ERORR: {errorMessage}</div>)}
 
-               </div>
-               
-                <div className="otherPlayersWrapper">
-                    <Player points={20} imageId={1} hasWonBool={false} />
-                    <h3>Trumpf Karte: {trumpCard}</h3>
-                    <Player points={20} imageId={1} hasWonBool={false} />
-                </div>
-                <div className='currentCardsWrapper'>
-                    <div className="currentCards">
-                        {currentCardsList}
-                    </div>
-                </div>
-                <div className="playerControllsWrapper">
-                    {playerPoints}
-                    <h3>Spieler an der Reihe: { playersTurn && ( "YES")}</h3>
-                    <button onClick={() => {startGame()}}> Start Game</button>
-                    <button onClick={() => {exchangeTrump()}}> Tausch Trumpf</button>
-                </div>
-              
-               
+                <h2>Game State:</h2>
+                <h3>Spieler an der Reihe: { playersTurn && ( "YES")}</h3>
+                <h3>Spieler Punkte: {playerPoints}</h3>
+                <h3>Trumpf Karte: {trumpCard}</h3>
+                <h3>Current Card: {currentCard}</h3>
+
+                <button onClick={() => {exchangeTrump()}}> Tausch Trumpf</button>
+                <h3>Spieler Karten:</h3>
                 <div className='playerCardsWrapper'>
                     <div className="playerCards"> 
                         {listItems}
@@ -137,7 +106,7 @@ const Game = ({sessionId}) => {
                 
                
 
-                <ToastContainer />
+             
             </div>;
 };
   

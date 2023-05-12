@@ -1,0 +1,38 @@
+.playground{
+    height: 100vh;
+    width: 100vw;
+    background-image: url("/assets/playground.jpg");
+    background-repeat: repeat;
+}
+
+.gameControllsWrapper, .otherPlayersWrapper, .currentCardsWrapper, .playerControllsWrapper, .playerCardsWrapper{
+    width: 95vw;
+    margin: 0 auto;
+}
+
+
+.gameControllsWrapper{
+    height: 10%;
+}
+
+.otherPlayersWrapper{
+    height: 20%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.currentCardsWrapper{
+    height: 30%;
+}
+.playerControllsWrapper{
+    height: 10%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.playerCardsWrapper{
+    height: 30%;
+}
+
+
