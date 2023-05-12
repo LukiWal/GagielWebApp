@@ -5,7 +5,7 @@
     background-repeat: repeat;
 }
 
-.gameControllsWrapper, .otherPlayersWrapper, .currentCardsWrapper, .playerControllsWrapper, .playerCardsWrapper{
+.gameControllsWrapper, .secondPlayerWrapper, .otherPlayersWrapper, .currentCardsWrapper, .playerControllsWrapper, .playerCardsWrapper{
     width: 95vw;
     margin: 0 auto;
 }
@@ -13,18 +13,30 @@
 
 .gameControllsWrapper{
     height: 10%;
-}
+} 
 
 .otherPlayersWrapper{
-    height: 20%;
+    height: 10%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+
+    &.morePlayers{
+        justify-content: space-between;
+    }
 }
 
 .currentCardsWrapper{
     height: 30%;
 }
+
+.secondPlayerWrapper{
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .playerControllsWrapper{
     height: 10%;
     display: flex;

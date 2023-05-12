@@ -1,0 +1,15 @@
+.trumpSymbol{
+    height: 30px;
+    width: 30px;
+}
+
+.currentTrumpCard{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    h3{
+        font-size: 30px;
+        margin: 0px;
+    }
+}

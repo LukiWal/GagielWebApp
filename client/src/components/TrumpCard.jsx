@@ -1,8 +1,8 @@
 import React from 'react';
-import './card.scss';
+import './trumpCard.scss';
 
 
-const CardNormal = ({card, width, height}) => {
+const TrumpCard = ({card}) => {
     let cardNumber = card.split(":").pop().split('_')[1];
     let cardColor = card.split(":").pop().split('_')[0];
 
@@ -24,13 +24,13 @@ const CardNormal = ({card, width, height}) => {
       default:
         cardColorUrl = "/hearth.svg"
     }
-    return <div className="card" style={{height: height, width: width}}> 
-        <button onClick={() => {}}> Play Card {card} </button>
-        <img class="symbol symbol-top" src={cardColorUrl}></img>
-        <img class="symbol symbol-bottom" src={cardColorUrl}></img>
-        <h3 class="number number-top">{cardNumber}</h3>
-        <h3 class="number number-bottom">{cardNumber}</h3>
+    return <div className="trumpCard"> 
+        <h3>Trumpf</h3>
+        <div class="currentTrumpCard">
+            <img class="trumpSymbol" src={cardColorUrl}></img>
+            <h3>{cardNumber}</h3>
+        </div>
     </div>;
   };
   
-export default CardNormal;
+export default TrumpCard;

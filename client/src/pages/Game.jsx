@@ -8,6 +8,7 @@ import Player from '../components/Player';
 import './game.scss';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import TrumpCard from '../components/TrumpCard';
 
 
 
@@ -19,12 +20,15 @@ const Game = ({sessionId}) => {
     const [playerPoints, setPlayerPoints] = useState("");
     const [currentCards, setCurrentCards] = useState([]);
     const [trumpCard, setTrumpCard] = useState("");
-    const [playersTurn, setPlayersTurn] = useState(false);
+    const [playersTurn, setPlayersTurn] = useState(0);
 
     const [cardHeight, setCardHeight] = useState(0);
     const [cardWidth, setCardWidth] = useState(0);
 
-    const [playerArray, setPlayerArray] = useState([]);
+    const [normalCardHeight, setNormalCardHeight] = useState(0);
+    const [normalCardWidth, setNormalCardWidth] = useState(0);
+
+    const [playerArray, setPlayerArray] = useState([0]);
     const [enemyPoints, setEnemyPoints] = useState([0,0,0]);
     const [maxPlayers, setMaxPlayers] = useState(0);
     const [playersTurn2, setPlayersTurn2] = useState(0);
@@ -103,7 +107,7 @@ const Game = ({sessionId}) => {
     if(currentCards.length > 0){
         var currentCardsVar = currentCards;
         console.log(currentCards)
-        currentCardsList = currentCardsVar.map((card) => <CardNormal key={card} card={card}></CardNormal>);
+        currentCardsList = currentCardsVar.map((card) => <CardNormal width={cardWidth} height={cardHeight} key={card} card={card}></CardNormal>);
     } 
 
     
@@ -149,6 +153,23 @@ const Game = ({sessionId}) => {
         setCardHeight(height);   
     },[size, playerCards] );
 
+    useEffect(() => {
+        const ASPECT_RATIO = 1.6;
+        let maxWidthCard = size.width * 0.95 * 0.9 * (1 / playerArray.length);
+        let maxHeightCard = size.height * 0.3 * 0.95;
+
+        let width = maxWidthCard;
+        let height = maxWidthCard * ASPECT_RATIO;
+
+        if(height>maxHeightCard){
+            width = maxHeightCard / ASPECT_RATIO;
+            height = maxHeightCard;
+        }
+        
+        setNormalCardWidth(width);
+        setNormalCardHeight(height);   
+    },[size]);
+
     return  <div className='playground'>
 {               /* <h1>Game {params.roomId} </h1>
                 <h2>Session ID: {sessionId}</h2> */}
@@ -160,20 +181,29 @@ const Game = ({sessionId}) => {
 
                </div>
                
-                <div className="otherPlayersWrapper">
-                    <Player points={20} imageId={1} hasWonBool={false} />
-                    <h3>Trumpf Karte: {trumpCard}</h3>
-                    <Player points={20} imageId={1} hasWonBool={false} />
+                <div className={"otherPlayersWrapper " + (playerArray.length >= 3 && 'morePlayers')}>
+                    {playerArray.length >= 3 &&
+                        <Player points={20} imageId={1} playersTurn={playerArray[2] == playersTurn} />
+                    }
+                   
+                    <TrumpCard key={trumpCard} card={trumpCard}></TrumpCard>
+                    {playerArray.length >= 4 &&
+                     <Player points={20} imageId={1} playersTurn={playerArray[3] == playersTurn} />
+                    }
                 </div>
                 <div className='currentCardsWrapper'>
                     <div className="currentCards">
                         {currentCardsList}
-                        <h2>{playerArray}</h2>
                     </div>
+                </div>
+                <div className="secondPlayerWrapper">
+                    {playerArray.length >= 2 &&
+                     <Player points={20} imageId={1} playersTurn={(playerArray[1] == playersTurn) && true} />
+                    }
                 </div>
                 <div className="playerControllsWrapper">
                     {playerPoints}
-                    <h3>Spieler an der Reihe: { playersTurn && ( "YES")}</h3>
+                    <h3>Spieler an der Reihe: { playerArray[0] == playersTurn && ( "YES")}</h3>
                     <button onClick={() => {startGame()}}> Start Game</button>
                     <button onClick={() => {exchangeTrump()}}> Tausch Trumpf</button>
                 </div>           

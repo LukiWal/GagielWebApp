@@ -115,12 +115,17 @@ async function playCard(data, callback){
             playerWon.trick = true;
             playerWon.points += points; 
 
-            callback();
+            //callback();
 
-            io.to(playerWon.socketId).emit("load_start_game", {
+           /*  io.to(playerWon.socketId).emit("load_start_game", {
                 playerPoints : playerWon.points,
                 playersTurn : true
-            })
+            }) */
+
+            io.to(game.gameId).emit("load_start_game", {
+                playerPoints : playerWon.points,
+                playersTurn : playerWon.playerId
+            }) 
         
             await playerWon.updatePlayer();
             //Check if player points > 101 
@@ -153,12 +158,12 @@ async function playCard(data, callback){
         let nextPlayer = new Player();
         await nextPlayer.fetchPlayerById(nextPlayerId);
 
-        if(nextPlayer.playerId != player.playerId){
-            callback();
-            io.to(nextPlayer.socketId).emit("load_start_game", {
-                playersTurn : true
+         if(nextPlayer.playerId != player.playerId){
+            //callback();
+            io.to(game.gameId).emit("load_start_game", {
+                playersTurn : nextPlayer.playerId
             }) 
-        } 
+        }  
     }
 }
 
@@ -216,23 +221,25 @@ async function loadGame(game, player, socket){
     await player.fetchPlayerById(player.playerId);
 
     let currentRound = new Round()
-    console.log(game.gameId)
+
     await currentRound.fetchCurrentRoundByGameId(game.gameId);
 
     let playerArray = game.getPlayerArray()
     let nextPlayerId = currentRound.getNextPlayerId(playerArray);
+   
+    let indexOfPlayer = playerArray.indexOf(player.playerId);
 
-    let playersTurn = false; 
-    
-    if(player.playerId == nextPlayerId){
-        playersTurn = true;
-    }
+    let firstArrayPart = playerArray.slice(0, indexOfPlayer);
+    let secondArrayPart = playerArray.slice(indexOfPlayer);
+
+    playerArray = secondArrayPart.concat(firstArrayPart);
 
     io.to(player.socketId).emit("load_start_game", {
         playerCards : player.cards, 
         playerPoints : player.points,
         trumpCard: game.trumpCard,
-        playersTurn : playersTurn,
+        playersTurn : nextPlayerId,
+        playerArray: playerArray,
         currentCards: currentRound.getCardsArray(),
     })
 
@@ -267,26 +274,30 @@ async function startGame(data, socket){
 
         // player.id
         
-        let indexOfPlayer = playerArray.indexOf(player.id);
+        let indexOfPlayer = playerArray.indexOf(player.playerId);
     
+        console.log(player.playerId)
         firstArrayPart = playerArray.slice(0, indexOfPlayer);
         secondArrayPart = playerArray.slice(indexOfPlayer);
 
+        console.log(firstArrayPart)
+        console.log(secondArrayPart)
         playerArray = secondArrayPart.concat(firstArrayPart);
         
         gameData = {
             playerCards : player.cards, 
             playerPoints : player.points,
             trumpCard: newGame.trumpCard,
-            playerArray: playerArray
+            playerArray: playerArray,
+            playersTurn: firstRound.playerToBeginn
         }
 
        
-        if(player.playerId == firstRound.playerToBeginn){
+            /*         if(player.playerId == firstRound.playerToBeginn){
             gameData.playersTurn = true
         } else {
             gameData.playersTurn = false
-        }
+        } */
 
         io.to(player.socketId).emit("load_start_game", gameData)
     }
