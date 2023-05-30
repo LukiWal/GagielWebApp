@@ -30,9 +30,6 @@ const Game = ({sessionId}) => {
 
     const [playerArray, setPlayerArray] = useState([0]);
     const [enemyPoints, setEnemyPoints] = useState([0,0,0]);
-    const [maxPlayers, setMaxPlayers] = useState(0);
-    const [playersTurn2, setPlayersTurn2] = useState(0);
-    const [playerWon, setPlayerWon] = useState(0);
 
 
 
@@ -107,7 +104,7 @@ const Game = ({sessionId}) => {
     if(currentCards.length > 0){
         var currentCardsVar = currentCards;
         console.log(currentCards)
-        currentCardsList = currentCardsVar.map((card) => <CardNormal width={cardWidth} height={cardHeight} key={card} card={card}></CardNormal>);
+        currentCardsList = currentCardsVar.map((card) => <CardNormal width={normalCardWidth} height={normalCardHeight} key={card} card={card}></CardNormal>);
     } 
 
     
@@ -215,7 +212,10 @@ const Game = ({sessionId}) => {
                 
                
 
-                <ToastContainer />
+                <ToastContainer 
+                position="top-center"
+                autoClose={2000}
+                />
             </div>;
 };
   
