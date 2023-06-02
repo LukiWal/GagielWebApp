@@ -10,26 +10,27 @@ const CardNormal = ({card, width, height}) => {
 
     switch(cardColor) {
       case "H":
-        cardColorUrl = "/hearth.svg"
+        cardColorUrl = "/herz.svg"
         break;
       case "B":
-        cardColorUrl = "/hearth.svg"
+        cardColorUrl = "/gras.svg"
         break;
       case "S":
-        cardColorUrl = "/hearth.svg"
+        cardColorUrl = "/schellen.svg"
         break;
       case "E":
-        cardColorUrl = "/hearth.svg"
+        cardColorUrl = "/eichel.svg"
         break;
       default:
         cardColorUrl = "/hearth.svg"
     }
     return <div className="card" style={{height: height, width: width}}> 
-        <button onClick={() => {}}> Play Card {card} </button>
-        <img class="symbol symbol-top" src={cardColorUrl}></img>
-        <img class="symbol symbol-bottom" src={cardColorUrl}></img>
-        <h3 class="number number-top">{cardNumber}</h3>
-        <h3 class="number number-bottom">{cardNumber}</h3>
+        <button>
+          <img class="symbol symbol-top" src={cardColorUrl}></img>
+          <img class="symbol symbol-bottom" src={cardColorUrl}></img>
+          <h3 class="number number-top">{cardNumber}</h3>
+          <h3 class="number number-bottom">{cardNumber}</h3>
+        </button>
     </div>;
   };
   

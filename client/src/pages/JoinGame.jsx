@@ -13,7 +13,7 @@ const JoinGame = () => {
                     setRoomId(event.target.value);
                     }}
                 ></input>
-                <Link to={'/game/' + roomId}>Join Game</Link>
+                <Link className="gaigelButton" to={'/game/' + roomId}>Join Game</Link>
             </div>;
   };
   

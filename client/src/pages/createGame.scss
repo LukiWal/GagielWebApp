@@ -1,0 +1,20 @@
+.createGameContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  
+
+    .selectPlayerNumberButton, .createGameButton{
+        min-width: 250px;
+        margin-top: 40px;
+    }
+
+    .selectPlayerNumberButton{
+        background-color: #4287f5;
+    }
+
+    .numberOfPlayers{
+        color: #EA4C89;
+    }
+}

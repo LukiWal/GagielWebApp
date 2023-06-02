@@ -17,10 +17,10 @@ const Game = ({sessionId}) => {
     let params = useParams();
 
     const [playerCards, setPlayerCards] = useState([]);
-    const [playerPoints, setPlayerPoints] = useState("");
+    const [playerPoints, setPlayerPoints] = useState(0);
     const [currentCards, setCurrentCards] = useState([]);
     const [trumpCard, setTrumpCard] = useState("");
-    const [playersTurn, setPlayersTurn] = useState(0);
+    const [playersTurn, setPlayersTurn] = useState(null);
 
     const [cardHeight, setCardHeight] = useState(0);
     const [cardWidth, setCardWidth] = useState(0);
@@ -30,6 +30,8 @@ const Game = ({sessionId}) => {
 
     const [playerArray, setPlayerArray] = useState([0]);
     const [enemyPoints, setEnemyPoints] = useState([0,0,0]);
+
+    const [gameHasStarted, setGameHasStarted] = useState(false);
 
 
 
@@ -61,7 +63,6 @@ const Game = ({sessionId}) => {
     
     useEffect(() => {
         function notify (message) {
-            console.log("NOTIFY ME")
             toast(message);
         }
 
@@ -72,6 +73,7 @@ const Game = ({sessionId}) => {
             if(data.playersTurn) setPlayersTurn(data.playersTurn);
             if(data.currentCards) setCurrentCards(data.currentCards);
             if(data.playerArray) setPlayerArray(data.playerArray)
+            if(data.hasStarted) setGameHasStarted(data.hasStarted)
         }
     
         socket.on("error_popup", notify);
@@ -199,10 +201,10 @@ const Game = ({sessionId}) => {
                     }
                 </div>
                 <div className="playerControllsWrapper">
-                    {playerPoints}
-                    <h3>Spieler an der Reihe: { playerArray[0] == playersTurn && ( "YES")}</h3>
-                    <button onClick={() => {startGame()}}> Start Game</button>
-                    <button onClick={() => {exchangeTrump()}}> Tausch Trumpf</button>
+                    <h3 className="playerPoints">{playerPoints}</h3>
+                    <h3 className={"yourTurnText " +(playerArray[0] == playersTurn && 'showYourTurnText')} >Your Turn</h3>
+                    <button className={"gaigelButton " +(gameHasStarted && 'hideButton')} onClick={() => {startGame()}}> Start Game</button>
+                    <button className="gaigelButton exchangeTrumpButton"onClick={() => {exchangeTrump()}}> <span>&#10227;</span>  </button>
                 </div>           
                 <div className='playerCardsWrapper'>
                     <div className="playerCards"> 
