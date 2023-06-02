@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Game from './pages/Game';
 import NoPage from './pages/NotPage';
 import CreateGame from './pages/CreateGame';
+import Gamerules from './pages/Gamerules';
 import { generateId } from './helper/helperFunctions';
 import { useEffect, useState } from "react";
 import JoinGame from './pages/JoinGame';
@@ -31,6 +32,7 @@ function App() {
         <Route path="*" element={<NoPage sessionId={sessionId} />} />
         <Route path="/create" element={<CreateGame sessionId={sessionId} />}/>
         <Route path="/join" element={<JoinGame sessionId={sessionId} />} />
+        <Route path="/gamerules" element={<Gamerules sessionId={sessionId} />}/>
       </Routes>
     </BrowserRouter>
   );

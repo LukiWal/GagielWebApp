@@ -169,7 +169,7 @@ const Game = ({sessionId}) => {
         setNormalCardHeight(height);   
     },[size]);
 
-    return  <div className='playground'>
+    return  <div className='fullheightContainer'>
 {               /* <h1>Game {params.roomId} </h1>
                 <h2>Session ID: {sessionId}</h2> */}
           

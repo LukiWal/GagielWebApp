@@ -1,3 +1,33 @@
+h1, h2, h3{
+  color: white;
+}
+
+.centerContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.marginContainer{
+  margin: 0 20px 0 20px;
+
+  p{
+    max-width: 500px;
+  }
+}
+
+body{
+  background-image: url("/assets/playground.jpg");
+  background-repeat: repeat;
+  background-size: 1000px;
+  //https://www.freepik.com/free-vector/green-geometric-background-patricks-day-colors_5685390.htm#query=poker%20table%20background&position=6&from_view=keyword&track=ais
+}
+
+.fullheightContainer{
+    height: 100vh;
+    width: 100vw;
+} 
 
 .gaigelButton{
 
@@ -32,6 +62,3 @@
   background-color: #F082AC;
 }
   
-h1, h2, h3{
-  color: white;
-}
