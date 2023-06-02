@@ -70,7 +70,7 @@ class Player{
     async fetchPlayerById(playerId){
         
         const sql = "SELECT * FROM `players` WHERE `playerId`='" +playerId +"'"
-
+        console.log(playerId)
         let data = await db.promise(sql);
 
         

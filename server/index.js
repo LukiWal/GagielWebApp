@@ -193,7 +193,9 @@ async function exchangeTrump(data){
     const [trumpColor, trumpValue] = game.trumpCard.split(":").pop().split('_');
 
     if(playerId == currentRound.playerToBeginn && !currentRound.card1 && player.trick){
-        let trumpSeven = player.cards.filter(element => element.includes(trumpColor +"_7"))
+        let trumpSeven = player.cards.filter(element => element.includes(trumpColor +"_7"));
+        trumpSeven = trumpSeven[0]
+        console.log(trumpSeven)
         if(trumpSeven.length > 0){
             player.cards.pop(trumpSeven);
             player.cards.push(game.trumpCard)
@@ -218,10 +220,13 @@ async function exchangeTrump(data){
 }
 
 async function loadGame(game, player, socket){
+    
+    console.log(player);
     await player.fetchPlayerById(player.playerId);
-
+ 
     let currentRound = new Round()
 
+    console.log(game.gameId)
     await currentRound.fetchCurrentRoundByGameId(game.gameId);
 
     let playerArray = game.getPlayerArray()
@@ -241,6 +246,7 @@ async function loadGame(game, player, socket){
         playersTurn : nextPlayerId,
         playerArray: playerArray,
         currentCards: currentRound.getCardsArray(),
+        hasStarted: game.hasStarted
     })
 
 }
@@ -260,9 +266,14 @@ async function startGame(data, socket){
     let newGame = new Game()
     await newGame.fetchGame(data.gameId)
 
-    let firstRound = new Round(data.gameId)
-
     let playerArray = newGame.getPlayerArray();
+
+    if(playerArray.length <= 1){
+        socket.emit("error_popup", "Not enough Players to start the Game!");
+        return;
+    }
+
+    let firstRound = new Round(data.gameId);
     firstRound.selectStartingPlayer(playerArray);
 
     firstRound.saveRound()
@@ -289,7 +300,8 @@ async function startGame(data, socket){
             playerPoints : player.points,
             trumpCard: newGame.trumpCard,
             playerArray: playerArray,
-            playersTurn: firstRound.playerToBeginn
+            playersTurn: firstRound.playerToBeginn,
+            hasStarted : newGame.hasStarted
         }
 
        
@@ -316,15 +328,12 @@ async function joinGame(data, socket){
     }
 
     let newPlayer = new Player(data.sessionId, data.gameId, socket.id);
+    newPlayer.playerId = await newPlayer.doesPlayerExist(); 
 
-    if(!newGame.maxPlayersReached()){ //AND PLAYER NOT IN GAME ALREADY
+    if(!newGame.maxPlayersReached() && !newGame.hasStarted && !newPlayer.playerId){ //AND PLAYER NOT IN GAME ALREADY
         console.log("new player joinded")
         await newGame.joinGame(data, socket.id);
     }else{
-        
-
-        newPlayer.playerId = await newPlayer.doesPlayerExist(); 
-        
         if(newPlayer.playerId){
             newPlayer.updatePlayer(); 
         }else{

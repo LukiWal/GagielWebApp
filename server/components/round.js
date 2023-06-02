@@ -203,10 +203,11 @@ class Round{
     async fetchCurrentRoundByGameId(gameId){
         //const sql = "SELECT * FROM `rounds` WHERE `gameId`='" +gameId +"'"
         //const sql = "select * FROM `rounds` where `gameId`='" +gameId +"' having max(id)"
-        const sql = "SELECT * FROM rounds WHERE id IN ( SELECT MAX(id) FROM rounds) AND `gameId`='" +gameId +"'"
-       
-        let data = await db.promise(sql);
+        //const sql = "SELECT * FROM rounds WHERE id IN ( SELECT MAX(id) FROM rounds) AND `gameId`='" +gameId +"'"
+        const sql = "SELECT * FROM rounds WHERE `gameId`='" +gameId +"' ORDER BY id DESC LIMIT 1";
 
+        let data = await db.promise(sql);
+        console.log(sql)
 
         this.id = data[0].id;
         this.gameId = data[0].gameId;

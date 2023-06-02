@@ -18,6 +18,7 @@ class Game{
 
     createGame(data){
         this.gameId = data.newGameId;
+        this.maxPlayers = data.numberOfPlayers;
     }
     
     getCards(numberOfCards){
@@ -122,7 +123,7 @@ class Game{
             }
         });
 
-        if(this.maxPlayers <= playerCount){
+        if(this.maxPlayers < playerCount){
             return true;
         } else{
             return false;
@@ -155,13 +156,14 @@ class Game{
     }
 
     saveGame(){
-        const sql = "INSERT INTO games (`gameId`,`player1`,`player2`,`player3`,`player4`) VALUES (?)"
+        const sql = "INSERT INTO games (`gameId`,`player1`,`player2`,`player3`,`player4`,`maxPlayers`) VALUES (?)"
         const values = [
             this.gameId,
             this.player1,
             this.player2,
             this.player3,
-            this.player4
+            this.player4,
+            this.maxPlayers
         ]
 
         db.promiseInsert(sql, values);
