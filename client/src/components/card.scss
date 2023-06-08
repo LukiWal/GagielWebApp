@@ -1,3 +1,6 @@
+$small: 600px;
+
+
 .playerCardsWrapper, .currentCardsWrapper{
     width: 100vw;
     display: flex;
@@ -19,41 +22,79 @@
     //margin: 0 20px 0 20px;
     position: relative;
 }
-.number{
-    position: absolute;
-    font-size: 20px;
-}
 
-.number-top{
-    top: 20px;
-    right: 20px;
-}
 
-.number-bottom{
-    bottom: 20px;
-    left: 20px;
-}
+.card {
+    button{
+        width: 100%;
+        height: 100%;
+        background: rgb(253, 249, 249) !important;
+        box-shadow: 10px 5px 5px rgb(0, 0, 0, 0.4);
+        border: 1px solid #000
+    }
+    
+    .number{
+        position: absolute;
+        font-size: 20px;
+        color: black;
+        margin: 0px !important;
 
-.symbol{
-    position: absolute;
-    height: 30px;
-    width: 30px;
-}
+        @media screen and (max-width: $small) {
+            font-size: 14px;
+        }
+    }
+    
+    .number-top{
+        top: 23px;
+        right: 20px;
 
-.symbol-top{
-    top: 20px;
-    left: 20px;
-}
+        @media screen and (max-width: $small) {
+            font-size: 14px;
+            top: 10px;
+            right: 8px;
+        }
+    }
+    
+    .number-bottom{
+        bottom: 23px;
+        left: 20px;
 
-.symbol-bottom{
-    bottom: 20px;
-    right: 20px;
-}
+        @media screen and (max-width: $small) {
+            bottom: 13px;
+            left: 8px;
+        }
+    }
+    
+    .symbol{
+        position: absolute;
+        height: 30px;
+        width: 30px;
 
-.card button{
-    width: 100%;
-    height: 100%;
-    background: rgb(253, 249, 249) !important;
-    box-shadow: 10px 5px 5px rgb(0, 0, 0, 0.4);
-    border: 1px solid #000
+        @media screen and (max-width: $small) {
+            height: 20px;
+            width: 20px;
+        }
+    }
+    
+    .symbol-top{
+        top: 20px;
+        left: 20px;
+
+        @media screen and (max-width: $small) {
+            top: 10px;
+            left: 5px;
+        }
+    }
+    
+    .symbol-bottom{
+        bottom: 20px;
+        right: 20px;
+
+        @media screen and (max-width: $small) {
+            bottom: 10px;
+            right: 5px;
+        }
+    }
+
+    
 }

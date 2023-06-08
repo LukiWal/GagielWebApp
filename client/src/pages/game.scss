@@ -1,3 +1,15 @@
+.gameContainer{
+    &.notStarted{
+        .otherPlayersWrapper, .playerPoints, .exchangeTrumpButton{
+            display: none !important;
+        }
+
+        .playerControllsWrapper{
+            justify-content: center;
+        }
+    }
+}
+
 
 
 .gameControllsWrapper, .secondPlayerWrapper, .otherPlayersWrapper, .currentCardsWrapper, .playerControllsWrapper, .playerCardsWrapper{
@@ -37,6 +49,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    
 
     .hideButton{
         display: none !important;
@@ -53,8 +66,9 @@
 
     .exchangeTrumpButton{
         border-radius: 50%;
-        width: 50px;
-        height: 50px;
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 0px !important;
         display: inline-flex;
         flex-direction: column;
         justify-content: center;
@@ -69,6 +83,7 @@
 
     .playerPoints{
         color: white;
+        font-size: 30px;
     }
 }
 .playerCardsWrapper{

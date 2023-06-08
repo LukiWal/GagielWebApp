@@ -5,8 +5,8 @@ import { useState } from 'react';
 const JoinGame = () => {
     const [roomId, setRoomId] = useState("");
 
-    return  <div>
-
+    return  <div className="createGameContainer fullheightContainer centerContainer">
+                <h1>Join Game</h1>
                 <input
                     placeholder="Room Number..."
                     onChange={(event) => {

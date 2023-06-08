@@ -29,7 +29,7 @@ const Game = ({sessionId}) => {
     const [normalCardWidth, setNormalCardWidth] = useState(0);
 
     const [playerArray, setPlayerArray] = useState([0]);
-    const [enemyPoints, setEnemyPoints] = useState([0,0,0]);
+    const [enemyPoints, setEnemyPoints] = useState([0,0,0,0]);
 
     const [gameHasStarted, setGameHasStarted] = useState(false);
 
@@ -169,7 +169,7 @@ const Game = ({sessionId}) => {
         setNormalCardHeight(height);   
     },[size]);
 
-    return  <div className='fullheightContainer'>
+    return  <div className={'fullheightContainer gameContainer ' + (!gameHasStarted && 'notStarted')}>
 {               /* <h1>Game {params.roomId} </h1>
                 <h2>Session ID: {sessionId}</h2> */}
           

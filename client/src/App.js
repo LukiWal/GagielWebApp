@@ -8,6 +8,7 @@ import Gamerules from './pages/Gamerules';
 import { generateId } from './helper/helperFunctions';
 import { useEffect, useState } from "react";
 import JoinGame from './pages/JoinGame';
+import Play from './pages/Play';
 
 function App() {
   const [sessionId, setSessionId] = useState(JSON.parse(localStorage.getItem('sessionId')));
@@ -33,6 +34,7 @@ function App() {
         <Route path="/create" element={<CreateGame sessionId={sessionId} />}/>
         <Route path="/join" element={<JoinGame sessionId={sessionId} />} />
         <Route path="/gamerules" element={<Gamerules sessionId={sessionId} />}/>
+        <Route path="/play" element={<Play sessionId={sessionId} />}/>
       </Routes>
     </BrowserRouter>
   );

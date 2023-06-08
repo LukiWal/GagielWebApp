@@ -11,7 +11,7 @@
 
     .points{
         text-align: center;
-        font-size: 20px;
+        font-size: 23px;
         font-weight: bold;
         color: white;
     }
@@ -19,8 +19,8 @@
 
 
 .playersTurn{
-    .points{
-        font-size: 22px;
-        color: gold !important;
+    .imageWrapper{
+        border-radius: 50%;
+        border: gold 5px solid;
     }
 }
