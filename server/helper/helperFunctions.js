@@ -22,6 +22,5 @@ const createDeckOfCards=()=>{
     return deckOfCards;
 }
 
-console.log(createDeckOfCards())
 module.exports = createDeckOfCards
 

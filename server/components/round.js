@@ -207,7 +207,7 @@ class Round{
         const sql = "SELECT * FROM rounds WHERE `gameId`='" +gameId +"' ORDER BY id DESC LIMIT 1";
 
         let data = await db.promise(sql);
-        console.log(sql)
+   
 
         this.id = data[0].id;
         this.gameId = data[0].gameId;

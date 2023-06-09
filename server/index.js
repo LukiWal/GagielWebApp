@@ -23,11 +23,9 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
-    console.log(io.engine.clientsCount)
   
     socket.on("disconnect", () => {
         console.log(`User disconnected: ${socket.id}`);
-        console.log(io.engine.clientsCount)
     });
 
     socket.on("session_id", (data) => {
@@ -87,7 +85,7 @@ async function playCard(data, callback){
             if(currentRound.playCardWithServe(data.card, game.trumpCard, player.cards)){
                 player.removeCard(data.card);
             } else{
-                io.to(player.socketId).emit("error_popup", "YOU HAVE TO SERVE CARDS");
+                io.to(player.socketId).emit("error_popup", "You have to serve cards");
                 return;
             }
         }
@@ -113,7 +111,7 @@ async function playCard(data, callback){
             let playerWon = new Player();
             await playerWon.fetchPlayerById(playerIdForHighestCard);
 
-            io.to(playerWon.socketId).emit("error_popup", "YOU WON :))");
+            io.to(playerWon.socketId).emit("error_popup", "You won the round!");
             playerWon.trick = true;
             playerWon.points += points; 
 
@@ -197,7 +195,7 @@ async function exchangeTrump(data){
     if(playerId == currentRound.playerToBeginn && !currentRound.card1 && player.trick){
         let trumpSeven = player.cards.filter(element => element.includes(trumpColor +"_7"));
         trumpSeven = trumpSeven[0]
-        console.log(trumpSeven)
+
         if(trumpSeven.length > 0){
             player.cards.pop(trumpSeven);
             player.cards.push(game.trumpCard)
@@ -223,12 +221,10 @@ async function exchangeTrump(data){
 
 async function loadGame(game, player, socket){
     
-    console.log(player);
     await player.fetchPlayerById(player.playerId);
  
     let currentRound = new Round()
 
-    console.log(game.gameId)
     await currentRound.fetchCurrentRoundByGameId(game.gameId);
 
     let playerArray = game.getPlayerArray()
@@ -271,7 +267,7 @@ async function startGame(data, socket){
     let playerArray = newGame.getPlayerArray();
 
     if(playerArray.length <= 1){
-        socket.emit("error_popup", "Not enough Players to start the Game!");
+        socket.emit("error_popup", "Not enough players to start the game!");
         return;
     }
 
@@ -288,13 +284,10 @@ async function startGame(data, socket){
         // player.id
         
         let indexOfPlayer = playerArray.indexOf(player.playerId);
-    
-        console.log(player.playerId)
+  
         firstArrayPart = playerArray.slice(0, indexOfPlayer);
         secondArrayPart = playerArray.slice(indexOfPlayer);
 
-        console.log(firstArrayPart)
-        console.log(secondArrayPart)
         playerArray = secondArrayPart.concat(firstArrayPart);
         
         gameData = {
@@ -325,7 +318,7 @@ async function joinGame(data, socket){
     try{
         await newGame.fetchGame(data.gameId);
     }catch(e){
-        socket.emit("error_popup", "WRONG CODE ERORR!!!");
+        socket.emit("error_popup", "ERROR: GameCode does not exist!");
         return;
     }
 
@@ -333,13 +326,12 @@ async function joinGame(data, socket){
     newPlayer.playerId = await newPlayer.doesPlayerExist(); 
 
     if(!newGame.maxPlayersReached() && !newGame.hasStarted && !newPlayer.playerId){ //AND PLAYER NOT IN GAME ALREADY
-        console.log("new player joinded")
         await newGame.joinGame(data, socket.id);
     }else{
         if(newPlayer.playerId){
             newPlayer.updatePlayer(); 
         }else{
-            socket.emit("error_popup", "GAME FULL ERROR");
+            socket.emit("error_popup", "Game is already full!");
             return;  
         } 
     }
