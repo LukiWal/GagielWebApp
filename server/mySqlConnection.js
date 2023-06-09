@@ -1,10 +1,12 @@
 const mysql = require('mysql2');
 const CREATE = require('./helper/createTablesConstants.js')
 
+require('dotenv').config();
+
 const db = mysql.createConnection({
-    host:"localhost",
-    user:"root",
-    password:"admin123"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD
 });
 
 db.connect(function(err) {

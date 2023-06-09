@@ -155,7 +155,7 @@ const Game = ({sessionId}) => {
     useEffect(() => {
         const ASPECT_RATIO = 1.6;
         let maxWidthCard = size.width * 0.95 * 0.9 * (1 / playerArray.length);
-        let maxHeightCard = size.height * 0.3 * 0.95;
+        let maxHeightCard = size.height * 0.27 * 0.95;
 
         let width = maxWidthCard;
         let height = maxWidthCard * ASPECT_RATIO;
@@ -177,7 +177,7 @@ const Game = ({sessionId}) => {
                           
                 
                <div className="gameControllsWrapper">
-
+                    <a href="#" className="close" />
                </div>
                
                 <div className={"otherPlayersWrapper " + (playerArray.length >= 3 && 'morePlayers')}>

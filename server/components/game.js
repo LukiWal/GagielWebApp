@@ -145,6 +145,7 @@ class Game{
         this.player4 = data[0].player4;
         this.deckOfCards = JSON.parse(data[0].deckOfCards)
         this.trumpCard = data[0].trumpCard;
+        this.maxPlayers = data[0].maxPlayers
         this.hasStarted = data[0].gameStarted;
 
         if(this.id != null){

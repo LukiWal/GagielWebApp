@@ -7,6 +7,8 @@ const Game = require('./components/game')
 const Player = require('./components/player')
 const Round = require('./components/round')
 
+require('dotenv').config();
+
 const app = express();
 app.use(cors);
 
@@ -14,7 +16,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "http://localhost:" +process.env.REACT_PORT,
         methods: ["GET", "POST"],
     }
 });
@@ -349,20 +351,6 @@ async function joinGame(data, socket){
     socket.join(data.gameId);
 }
 
-
-
-async function test(){
-    let newRound = new Round()
-    
-    newRound.card1 = "S_10";
-    newRound.card2 = "H_7";
-    newRound.card3 = "S_A";
-    newRound.card4 = "H_K";
-    //await newRound.fetchCurrentRoundByGameId("AAAAAA");
-}
-
-//test()  
-
-server.listen(8800, () =>{
+server.listen(process.env.NODE_JS_PORT, () =>{
     console.log("SERVER IS RUNNING...")
 })

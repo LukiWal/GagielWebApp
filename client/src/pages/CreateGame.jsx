@@ -30,7 +30,7 @@ const CreateGame = ({sessionId}) => {
 
     return <div className="createGameContainer fullheightContainer centerContainer">
                 <h1>Create Game </h1>
-                <h3>Game Code: <span className='numberOfPlayers'>{newGameId}</span> <button className="gaigelButton" onClick={() => {navigator.clipboard.writeText(newGameId)}}>Copy Code!</button></h3>
+                <h3>Game Code: <span className='numberOfPlayers'>{newGameId}</span> <button className="gaigelButton copyCodeButton" onClick={() => {navigator.clipboard.writeText(newGameId)}}>Copy Code!</button></h3>
                 <h3>Create a game for: <span className='numberOfPlayers'>{numberOfPlayers} Players </span>!</h3>
                 <button className="gaigelButton selectPlayerNumberButton" onClick={() => setNumberOfPlayers(2)}>2 Players</button>
                 <button className="gaigelButton selectPlayerNumberButton" onClick={() => setNumberOfPlayers(3)}>3 Players</button>
