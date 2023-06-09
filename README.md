@@ -21,6 +21,13 @@ Clone the Project in a Folder
 
 Run `npm install` in Root directory of the app  
 
+Modify the .env File in the server/ directory with your MySQL User and Password
+
+`DB_USER= "YourUsername"`
+
+`DB_PASSWORD="YourPassword"`
+
+**NOTE:** If you want to use a other Node JS Port you have to modify the Port in the .env and in the client/helper/socket.js `NODE_JS_PORT` constant
 ## Start the App
 
 Run `npm run start-server` in a CLI Terminal
