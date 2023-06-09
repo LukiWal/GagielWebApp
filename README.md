@@ -1,4 +1,4 @@
-# GagielWebApp
+# GaigelWebApp
 The Gaigel Web App is an online platform for playing the card game Gaigel. It allows users to enjoy the game with friends or other players from around the world, directly in their web browser.
 
 ## Technologies Used
